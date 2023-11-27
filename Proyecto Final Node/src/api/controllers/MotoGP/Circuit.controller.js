@@ -1,5 +1,9 @@
+const setError = require('../../../helpers/handle-error');
 const { deleteImgCloudinary } = require('../../../middleware/files.middleware');
+const Comment = require('../../models/Comment.model');
 const Circuit = require('../../models/MotoGP/Circuit.model');
+const Rider = require('../../models/MotoGP/Rider.model');
+const User = require('../../models/User.model');
 
 //! --------------- CREATE ----------------
 const create = async (req, res, next) => {

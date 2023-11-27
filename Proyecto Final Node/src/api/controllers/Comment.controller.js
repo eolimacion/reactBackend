@@ -1,6 +1,8 @@
 const setError = require("../../helpers/handle-error");
 const Comment = require("../models/Comment.model");
 const Eleven = require("../models/Eleven.model");
+const Podium = require("../models/MotoGP/Podium.model");
+const Lifter = require("../models/Powerlifting/Lifter.model");
 const User = require("../models/User.model");
 
 //! ---------------- CREATE -----------------
@@ -20,6 +22,70 @@ const create = async (req, res, next) => {
     const saveComment = await newComment.save();
     await Eleven.findByIdAndUpdate(
       location, //? ----- hacemos que sea recíproco, y que se cree el comentario en el eleven
+      { $push: { comments: saveComment._id } },
+    );
+    await User.findByIdAndUpdate(
+      creator, //? ----- hacemos que sea recíproco, y que se cree el comentario en el eleven
+      { $push: { comments: saveComment._id } },
+    );
+    return res
+      .status(saveComment ? 200 : 404)
+      .json(saveComment ? saveComment : "Error en el guardado del comentario");
+  } catch (error) {
+    return next(
+      setError(500, error.message || "Error general al crear tu comentario ❌"),
+    );
+  }
+};
+//! ---------------- CREATE PODIUM -----------------
+const createPodiumComment = async (req, res, next) => {
+  try {
+    await Comment.syncIndexes();
+    const { locationMoto } = req.params;
+    const creator = req.user._id;
+    const body = req.body;
+    const customBody = {
+      //? creamos un customBody para añadirle el creador que nos lo da el token y la locationMoto que nos la da la url. a parte del contenido que lo damos en el body
+      creator: creator,
+      locationMoto: locationMoto,
+      comment: body.comment,
+    };
+    const newComment = new Comment(customBody);
+    const saveComment = await newComment.save();
+    await Podium.findByIdAndUpdate(
+      locationMoto, //? ----- hacemos que sea recíproco, y que se cree el comentario en el eleven
+      { $push: { comments: saveComment._id } },
+    );
+    await User.findByIdAndUpdate(
+      creator, //? ----- hacemos que sea recíproco, y que se cree el comentario en el eleven
+      { $push: { comments: saveComment._id } },
+    );
+    return res
+      .status(saveComment ? 200 : 404)
+      .json(saveComment ? saveComment : "Error en el guardado del comentario");
+  } catch (error) {
+    return next(
+      setError(500, error.message || "Error general al crear tu comentario ❌"),
+    );
+  }
+};
+//! ---------------- CREATE PODIUM -----------------
+const createLifterComment = async (req, res, next) => {
+  try {
+    await Comment.syncIndexes();
+    const { locationLifter } = req.params;
+    const creator = req.user._id;
+    const body = req.body;
+    const customBody = {
+      //? creamos un customBody para añadirle el creador que nos lo da el token y la locationLifter que nos la da la url. a parte del contenido que lo damos en el body
+      creator: creator,
+      locationLifter: locationLifter,
+      comment: body.comment,
+    };
+    const newComment = new Comment(customBody);
+    const saveComment = await newComment.save();
+    await Podium.findByIdAndUpdate(
+      locationLifter, //? ----- hacemos que sea recíproco, y que se cree el comentario en el eleven
       { $push: { comments: saveComment._id } },
     );
     await User.findByIdAndUpdate(
@@ -116,6 +182,39 @@ const deleteComment = async (req, res, next) => {
             { favComments: id }, //? -------------------- condición/ubicación del cambio (eliminación)
             { $pull: { favComments: id } }, //? ------------ ejecución
           );
+          try {
+            //? ----------------------------------------- ELIMINAMOS AL FAVCOMMENT DEL PODIUM
+            await Podium.updateMany(
+              //? ------- ahora estamos cambiando en el model de User para poder quitar el favcomment que ya no existe
+              { comments: id }, //? -------------------- condición/ubicación del cambio (eliminación)
+              { $pull: { comments: id } }, //? ------------ ejecución
+            );
+            try {
+              //? ----------------------------------------- ELIMINAMOS AL FAVCOMMENT DEL PODIUM
+              await Lifter.updateMany(
+               
+                { comments: id }, 
+                { $pull: { comments: id } }, 
+              );
+              
+            } catch (error) {
+              return next(
+                setError(
+                  500,
+                  error.message || "Error al eliminar el comentario del Lifter ❌",
+                ),
+              );
+              
+            }
+          } catch (error) {
+            return next(
+              setError(
+                500,
+                error.message || "Error al eliminar el comentario del podium ❌",
+              ),
+            );
+            
+          }
         } catch (error) {
           return next(
             setError(
@@ -123,6 +222,7 @@ const deleteComment = async (req, res, next) => {
               error.message || "Error al eliminar el comentario del user ❌",
             ),
           );
+          
         }
       } catch (error) {
         return next(
@@ -156,4 +256,6 @@ module.exports = {
   getById,
   getAll,
   deleteComment,
+  createLifterComment,
+  createPodiumComment
 };

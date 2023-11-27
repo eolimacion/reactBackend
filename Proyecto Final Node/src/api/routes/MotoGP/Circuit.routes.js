@@ -1,5 +1,5 @@
 
-const { upload } = require("../../../middleware/files.middleware");
+// const { upload } = require("../../../middleware/files.middleware");
 
 const { create, getById, getByName, getAll, update, deleteCircuit, sortCircuitsbyDescending, sortCircuitsbyAscending, filterGeneralNum, filterAndSort, averageStats} = require("../../controllers/MotoGP/Circuit.controller");
 
