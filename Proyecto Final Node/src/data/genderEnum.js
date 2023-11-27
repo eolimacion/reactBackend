@@ -1,0 +1,1 @@
+export const genderEnum = ['hombre', 'mujer', 'otros']
