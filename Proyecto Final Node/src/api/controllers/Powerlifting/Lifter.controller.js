@@ -86,6 +86,29 @@ const getByLifterName = async (req, res) => {
   }
 };
 
+//<!--SEC                                      SORT BY GL POINTS                                       -->
+
+const getLifterByGL = async (req, res, next) => {
+  try {
+    const allLifters = await Lifter.find();
+    if (allLifters.length > 0) {
+      allLifters.sort((a, b) => b.GLPoints - a.GLPoints);
+      console.log(allLifters);
+
+      return res.status(200).json({
+        allLifters,
+      });
+    } else {
+      return res.status(404).json('not found');
+    }
+  } catch (error) {
+    return next(setError(500, error.message || 'Error'));
+  }
+};
+
+
+
+
 //<!--SEC                                  TOGGLE CATEGORY FOR LIFTER                                    -->
 
 const addAndRemoveCategoryById = async (req, res, next) => {
@@ -174,6 +197,7 @@ const updateLifter = async (req, res) => {
         deadlift: req.body?.deadlift
           ? req.body.deadlift.parseInt()
           : lifterById.deadlift,
+        total: req.body?.total ? req.body.total.parseInt() : lifterById.total,
         GLPoints: req.body?.GLPoints
           ? req.body.GLPoints.parseInt()
           : lifterById.GLPoints,
@@ -266,6 +290,7 @@ module.exports = {
   getLifterById,
   getAllLifters,
   getByLifterName,
+  getLifterByGL,
   addAndRemoveCategoryById,
   updateLifter,
   deleteLifter,

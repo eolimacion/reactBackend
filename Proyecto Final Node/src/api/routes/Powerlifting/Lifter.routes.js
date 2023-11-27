@@ -3,6 +3,7 @@ const  {
     getLifterById,
     getAllLifters,
     getByLifterName,
+    getLifterByGL,
     addAndRemoveCategoryById,
     updateLifter,
     deleteLifter,
@@ -15,6 +16,7 @@ const LifterRoutes = require('express').Router();
 LifterRoutes.get('/:id', getLifterById)
 LifterRoutes.get('/', getAllLifters)
 LifterRoutes.get('/sort/:name', getByLifterName)
+LifterRoutes.get('/getByGL', getLifterByGL)
 
 
 

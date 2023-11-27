@@ -20,6 +20,7 @@ const LifterSchema = new mongoose.Schema(
     benchPress: { type: Number, required: true },
     squat: { type: Number, required: true },
     deadlift: { type: Number, required: true },
+    total: { type: Number },
     GLPoints: { type: Number, required: false },
     weightCategory: [
       { type: mongoose.Schema.Types.ObjectId, ref: 'weightCategory' },

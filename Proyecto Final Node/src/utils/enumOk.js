@@ -57,9 +57,24 @@ const enumLeagueOk = (league) => {
   }
 };
 
+
+//!-------- ENUM  WEIGHT CATEGORIES ----------
+
+const enumWeightCatOk = (weight) => {
+  const enumWeight = [ 53, 59, 66, 74, 83, 93, 105, 120, "+120", 43, 47, 52, 57, 63, 69, 76, 84, "+84" ];
+  if (enumWeight.includes(weight)) {
+    console.log("entro en el true");
+    return true
+  } else {
+    return false
+  }
+};
+
+
 module.exports = {
   enumGenderOk,
   enumPositionOk,
   enumPreferredFootOk,
   enumLeagueOk,
+  enumWeightCatOk,
 };
