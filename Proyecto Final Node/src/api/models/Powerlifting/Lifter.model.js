@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const genderEnum = require('../../../data/genderEnum');
 
-
 const LifterSchema = new mongoose.Schema(
   {
     name: {

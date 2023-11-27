@@ -1,4 +1,3 @@
-
 const setError = require('../../../helpers/handle-error');
 const Lifter = require('../../models/Powerlifting/Lifter.model');
 const WeightCategory = require('../../models/Powerlifting/WeightCategory.model');
