@@ -34,7 +34,7 @@ const create = async (req, res, next) => {
         //? si se ha guardado correctamente (savePlayer existe)
         res
           .status(200)
-          .json(await Rider.findById(id).populate("likes selected")); //? ---- podriamos poner que devuelva savePlayer pero he puesto el findbyid para popular el team
+          .json(await Rider.findById(id).populate("circuits likes selected")); //? ---- podriamos poner que devuelva savePlayer pero he puesto el findbyid para popular el team
       } else {
         return res.status(404).json({
           message: "No se ha podido guardar el rider en la DB ❌",
@@ -72,7 +72,7 @@ const create = async (req, res, next) => {
   //! --------------- GET ALL ----------------
 const getAll = async (req, res, next) => {
     try {
-      const allRiders = await Rider.find().populate("likes selected"); //? ------------- el find() nos devuelve un array con todos los elementos de la colección del BackEnd, es decir, TODOS LOS RIDERS
+      const allRiders = await Rider.find().populate("circuits likes selected"); //? ------------- el find() nos devuelve un array con todos los elementos de la colección del BackEnd, es decir, TODOS LOS RIDERS
       if (allRiders.length > 0) {
         //? --------------------------- SI HAY MOTOS:
         console.log(allRiders)
@@ -143,7 +143,7 @@ const update = async (req, res) => {
             }
 
             try {
-                await Rider.findByIdAndUpdate(id, customBody).populate("likes selected")
+                await Rider.findByIdAndUpdate(id, customBody).populate("circuits likes selected")
                 if (req.file?.path) {
                     deleteImgCloudinary(oldImg);
                 }
