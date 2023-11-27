@@ -26,16 +26,25 @@ app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ limit: "5mb", extended: false }));
 
 //! 6. --------- RUTAS
+
+//* 6.1. --------- RUTAS USER--------------------------------------
+const UserRoutes = require("./src/api/routes/User.routes");
+app.use("/api/v1/users/", UserRoutes);
+
+const CommentRoutes = require("./src/api/routes/Comment.routes");
+app.use("/api/v1/comment/", CommentRoutes);
+
+//* 6.2. --------- RUTAS FUTBOL--------------------------------------
 const PlayerRoutes = require("./src/api/routes/Player.routes");
 app.use("/api/v1/players/", PlayerRoutes)
 
 const TeamRoutes = require("./src/api/routes/Team.routes");
 app.use("/api/v1/teams/", TeamRoutes)
 
-const UserRoutes = require("./src/api/routes/User.routes");
-app.use("/api/v1/users/", UserRoutes);
+const ElevenRoutes = require("./src/api/routes/Eleven.routes");
+app.use("/api/v1/eleven/", ElevenRoutes);
 
-//* 6.1. --------- RUTAS MOTO--------------------------------------
+//* 6.3. --------- RUTAS MOTO--------------------------------------
 const CircuitRoutes = require("./src/api/routes/MotoGP/Circuit.routes");
 app.use("/api/v1/circuit/", CircuitRoutes);
 
@@ -46,15 +55,14 @@ const PodiumRoutes = require("./src/api/routes/MotoGP/Podium.routes");
 app.use("/api/v1/podium/", PodiumRoutes);
 
 
-//*  -----------------------------------------------------------
+//* 6.1. --------- RUTAS POWER--------------------------------------
 
+const LifterRoutes = require("./src/api/routes/Powerlifting/Lifter.routes");
+app.use("/api/v1/lifter/", LifterRoutes);
 
-const ElevenRoutes = require("./src/api/routes/Eleven.routes");
-app.use("/api/v1/eleven/", ElevenRoutes);
+const WeightCategoryRoutes = require("./src/api/routes/Powerlifting/WeightCategory.routes");
+app.use("/api/v1/weightCategory/", WeightCategoryRoutes);
 
-const CommentRoutes = require("./src/api/routes/Comment.routes");
-
-app.use("/api/v1/comment/", CommentRoutes);
 
 //! 7. --------- ERRORES
 //------- ERR0R: RUTA NO ENCONTRADA
