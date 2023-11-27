@@ -416,6 +416,44 @@ const sortRidersByAscending = async (req, res, next) => {
     }
 }
 
+//!-----------FILTER POR NAME ------------------
+
+const filterRiders = async (req, res, next) => {
+  try {
+    let ridersArray;
+    const { filter, gt, lt } = req.params;
+
+    switch (filter) {
+      case 'name':
+      case 'team':
+      case 'nationality':
+      case 'victoriesSeason':
+      case 'victoriesCarrer':
+      case 'championshipsCarrer':
+      case 'polesSeason':
+      case 'points':
+        ridersArray = await Rider.find({
+          $and: [{ [filter]: { $gt: gt } }, { [filter]: { $lt: lt } }],
+        }).populate('likes selected circuits'); 
+
+        break;
+
+      default:
+        return res.status(404).json('La propiedad por la que quiere filtrar no existe o está mal escrita ❌');
+    }
+
+    return res
+      .status(ridersArray.length > 0 ? 200 : 404)
+      .json(
+        ridersArray.length > 0
+          ? ridersArray
+          : `No se han encontrado pilotos con ${filter} mayor que ${gt} y menor que ${lt} en la DB/BackEnd.`
+      );
+  } catch (error) {
+    return next(setError(500, error.message || 'Error general al filtrar riders ❌'));
+  }
+};
+
 module.exports = {
     create,
     getById,
@@ -425,4 +463,5 @@ module.exports = {
     deleteRider,
     sortRidersByAscending,
     sortRidersByDescending,
+    filterRiders,
 };
