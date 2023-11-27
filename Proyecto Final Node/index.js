@@ -37,13 +37,13 @@ app.use("/api/v1/users/", UserRoutes);
 
 //* 6.1. --------- RUTAS MOTO--------------------------------------
 const CircuitRoutes = require("./src/api/routes/MotoGP/Circuit.routes");
-app.use("/api/v1/moto/", CircuitRoutes);
+app.use("/api/v1/circuit/", CircuitRoutes);
 
 const RiderRoutes = require("./src/api/routes/MotoGP/Rider.routes");
-app.use("/api/v1/moto/", RiderRoutes);
+app.use("/api/v1/rider/", RiderRoutes);
 
 const PodiumRoutes = require("./src/api/routes/MotoGP/Podium.routes");
-app.use("/api/v1/moto/", PodiumRoutes);
+app.use("/api/v1/podium/", PodiumRoutes);
 
 
 //*  -----------------------------------------------------------
