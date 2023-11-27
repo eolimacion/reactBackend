@@ -1919,7 +1919,7 @@ const getFavCircuits = async (req, res, next) => {
 };
 
 //! ------------------- GET FAV PODIUM ----------------------
-const getFavPodium = async (req, res, next) => {
+const getFavPodiums = async (req, res, next) => {
   console.log("HE ENTRADDDDOOOOO")
   try {
     const { id } = req.params; //?----------------------------------------- id del user por el param, vamos a buscar los fav podiums de este user
@@ -1945,7 +1945,7 @@ const getFavPodium = async (req, res, next) => {
 };
 
 //! ------------------- GET FAV LIFTER ----------------------
-const getFavLifter = async (req, res, next) => {
+const getFavLifters = async (req, res, next) => {
   console.log("HE ENTRADDDDOOOOO")
   try {
     const { id } = req.params; //?----------------------------------------- id del user por el param, vamos a buscar los fav lifters de este user
