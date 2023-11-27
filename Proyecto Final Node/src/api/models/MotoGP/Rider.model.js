@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
-const Raider = mongoose.Schema;
-const RaiderSchema = new Schema(
+const Rider = mongoose.Schema;
+const RiderSchema = new Schema(
   {
     name: { type: String, unique: true, required: true },
     
@@ -16,7 +16,7 @@ const RaiderSchema = new Schema(
     championshipsCarrer:{ type: Number, required: false },
     team:{ type: String, required: false },
     polesSeason:{ type: Number, required: true },
-    circuits: [{ type: mongoose.Schema.Types.ObjectId, ref: "Circuits" }],
+    circuits: [{ type: mongoose.Schema.Types.ObjectId, ref: "Circuit" }],
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     selected: [{ type: mongoose.Schema.Types.ObjectId, ref: "Podium" }],
   },
@@ -24,7 +24,7 @@ const RaiderSchema = new Schema(
     timestamps: true,
   },
 );
-const Player = mongoose.model("Raider", RaiderSchema);
-module.exports = Raider;
+const Player = mongoose.model("Rider", RiderSchema);
+module.exports = Rider;
 
 
