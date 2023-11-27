@@ -26,6 +26,6 @@ CircuitRoutes.get('/sortdescending/circuits/:stat', sortCircuitsbyDescending);
 CircuitRoutes.get('/sortascending/circuits/:stat', sortCircuitsbyAscending);
 CircuitRoutes.get('/filter/circuits/:filter/:gt/:lt', filterGeneralNum);
 CircuitRoutes.get('/filtersort/circuits/:filter/:gt/:lt', filterAndSort);
-CircuitRoutes.get('/average/:stat/:circuitId', averageStats);
+CircuitRoutes.get('/average/:stat/', averageStats);
 
 module.exports = CircuitRoutes;

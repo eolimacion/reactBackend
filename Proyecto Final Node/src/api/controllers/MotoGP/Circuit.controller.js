@@ -2,8 +2,10 @@ const setError = require('../../../helpers/handle-error');
 const { deleteImgCloudinary } = require('../../../middleware/files.middleware');
 const Comment = require('../../models/Comment.model');
 const Circuit = require('../../models/MotoGP/Circuit.model');
+const Podium = require('../../models/MotoGP/Podium.model');
 const Rider = require('../../models/MotoGP/Rider.model');
 const User = require('../../models/User.model');
+
 
 //! --------------- CREATE ----------------
 const create = async (req, res, next) => {
@@ -56,7 +58,7 @@ const getById = async (req, res, next) => {
 const getAll = async (req, res, next) => {
   try {
     const allCircuits = await Circuit.find().populate(
-      ' likes mostSuccessful fastestLap selected'
+        'likes mostSuccessful fastestLap selected'
     ); //? ------------- el find() nos devuelve un array con todos los elementos de la colección del BackEnd, es decir, TODOS LOS circuitos
     return res
       .status(allCircuits.length > 0 ? 200 : 404) //? ---- si hay circuitos en la db (el array tiene al menos 1 elemento), 200 o 404
@@ -99,10 +101,10 @@ const update = async (req, res, next) => {
         _id: circuitById._id, //? ---------- ponemos _.id porque así lo pone en insomnia
         image: req.file?.path ? catchImg : oldImg, //? -------------- si en el param hay una nueva imagen la ponemos en el lugar de la que había, si no hay una nueva, se deja la que había
         name: req.body?.name ? req.body.name : circuitById.name,
-        location: req.body?.totalLength
+        location: req.body?.location
           ? req.body.location
           : circuitById.location,
-        length: req.body?.totalLength
+        totalLength: req.body?.totalLength
           ? req.body.totalLength
           : circuitById.totalLength,
         capacity: req.body?.capacity ? req.body.capacity : circuitById.capacity,
@@ -257,6 +259,7 @@ const sortCircuitsbyDescending = async (req, res, next) => {
       case 'location':
       case 'capacity':
       case 'topSpeed':
+        case 'name':
         circuitsArray.sort((a, b) => {
           return b[stat] - a[stat]; //? le decimos que ordene de manera descendiente (ascendiente sería a - b)
         });
@@ -309,6 +312,7 @@ const sortCircuitsbyAscending = async (req, res, next) => {
       case 'location':
       case 'capacity':
       case 'topSpeed':
+        case 'name':
         circuitsArray.sort((a, b) => {
           return a[stat] - b[stat]; //? le decimos que ordene de manera ASCENDIENTE
         });
@@ -358,7 +362,7 @@ const filterGeneralNum = async (req, res, next) => {
     const { filter, gt, lt } = req.params; //? en el param ponemos 1o: propiedad a filtrar, 2o: mayor que (Greater Than), 3o: menor que (Lower Than)
     switch (filter) {
       case 'totalLength':
-      case 'location':
+    
       case 'capacity':
       case 'topSpeed':
         circuitsArray = await Circuit.find({
@@ -441,51 +445,50 @@ const filterAndSort = async (req, res, next) => {
 
 // //! --------------- AVERAGE STATS ----------------
 const averageStats = async (req, res, next) => {
-  try {
-    const { stat, circuitId } = req.params; //? el stat es la propiedad de la que sacamos media, y el circuitId es para poder encontrar los jugadores del circuito
-    let average; //? tanto esta variable como circuitRiders, las declaramos fuera para poder acceder luego en el return a ellas
-    let circuitRiders;
-    switch (stat) {
-      case 'totalLength':
-      case 'capacity':
-      case 'topSpeed':
-        // eslint-disable-next-line no-case-declarations
-        let acc = 0;
-        // eslint-disable-next-line no-case-declarations
-        let numberCircuits = 0;
-        numberCircuits = await Circuit.find({ circuits: circuitId });
-        for (let circuit of numberCircuits) {
-          acc += circuit[stat];
-          numberRiders += 1;
-        }
-        average = acc / numberRiders;
-        break;
-
-      default:
-        return res
-          .status(404)
-          .json(
+    try {
+      const { stat, circuitId } = req.params;
+      let average;
+      let circuitRiders;
+  
+      switch (stat) {
+        case 'totalLength':
+        case 'capacity':
+        case 'topSpeed':
+          let acc = 0;
+          let numberCircuits = 0;
+  
+          circuitRiders = await Circuit.find();
+  
+          for (let circuit of circuitRiders) {
+            acc += circuit[stat];
+            numberCircuits += 1;
+          }
+  
+          average = acc / numberCircuits;
+          break;
+  
+        default:
+          return res.status(404).json(
             'La propiedad de la que quiere sacar la media no existe/está mal escrita/no es aplicable para este caso ❌, compruebe el modelo de datos para checkear como se escribe'
           );
-    }
-    return res
-      .status(circuitRiders.length > 0 ? 200 : 404)
-      .json(
-        circuitRiders.length > 0
+      }
+  
+      return res.json(
+        average
           ? `Average ${stat}: ${average}`
           : 'No se han encontrado jugadores de este circuito en la DB/BackEnd ❌'
       );
-  } catch (error) {
-    return next(
-      setError(
-        500,
-        error.message ||
-          `Error general al sacar la media de los jugadores del circuito ❌`
-      )
-    );
-  }
-};
-
+    } catch (error) {
+      return next(
+        setError(
+          500,
+          error.message ||
+            `Error general al sacar la media de los jugadores del circuito ❌`
+        )
+      );
+    }
+  };
+  
 module.exports = {
   //! MAIN
   create,

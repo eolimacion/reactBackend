@@ -1,6 +1,7 @@
 const setError = require("../../../helpers/handle-error");
 const Comment = require("../../models/Comment.model");
 const Circuit = require("../../models/MotoGP/Circuit.model");
+const Podium = require("../../models/MotoGP/Podium.model");
 const Rider = require("../../models/MotoGP/Rider.model");
 const User = require("../../models/User.model");
 
