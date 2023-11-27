@@ -1478,22 +1478,22 @@ const addFavCircuit = async (req, res, next) => {
 //! ------------------- ADD FAV PODIUM ----------------------
 const addFavPodium = async (req, res, next) => {
   try {
-    const { idPlayer } = req.params; //? --- recibimos el id del equipo que queremos darle like por el url
+    const { idPodium } = req.params; //? --- recibimos el id del equipo que queremos darle like por el url
     console.log("HE ENTRADO EN EL BACKEND")
-    console.log(idPlayer)
-    const elementPlayer = await Player.findById(idPlayer);
-    const { _id, favPlayers, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
+    console.log(idPodium)
+    const elementPodium = await Podium.findById(idPodium);
+    const { _id, favPodiums, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
 
-    if (favPlayers.includes(idPlayer)) {
+    if (favPodiums.includes(idPodium)) {
       //! ------------- PULL -----------------
       try {
         await User.findByIdAndUpdate(_id, {
           //? actualizamos el usuario. 1r param => condición ()
-          $pull: { favPlayers: idPlayer }, //? 2o param => ejecución (sacamos id del jugador del user)
+          $pull: { favPodiums: idPodium }, //? 2o param => ejecución (sacamos id del PODIUM del user)
         });
         try {
-          await Player.findByIdAndUpdate(idPlayer, {
-            //? aquí se actualiza el modelo de jugador para sacar al user como like
+          await Podium.findByIdAndUpdate(idPodium, {
+            //? aquí se actualiza el modelo de circuit para sacar al user como like
             $pull: { likes: _id },
           });
 
@@ -1501,18 +1501,18 @@ const addFavPodium = async (req, res, next) => {
 
           return res.status(200).json({
             userUpdate: await User.findById(_id),
-            playerUpdate: await Player.findById(idPlayer),
-            action: `Se ha quitado el jugador ${elementPlayer.name} como favorito del usuario ${name}`,
+            podiumUpdate: await Podium.findById(idPodium),
+            action: `Se ha quitado el PODIUM ${elementPodium.name} como favorito del usuario ${name}`,
           });
         } catch (error) {
           return res.status(404).json({
-            error: "Error al quitar el User, del Jugador ❌",
+            error: "Error al quitar el User, del PODIUM ❌",
             message: error.message,
           });
         }
       } catch (error) {
         return res.status(404).json({
-          message: "Error al quitar el Jugador, del User ❌",
+          message: "Error al quitar el PODIUM, del User ❌",
           error: error.message,
         });
       }
@@ -1521,11 +1521,11 @@ const addFavPodium = async (req, res, next) => {
       try {
         await User.findByIdAndUpdate(_id, {
           //? actualizamos el usuario. 1r param => condición ()
-          $push: { favPlayers: idPlayer }, //? 2o param => ejecución (metemos id de jugador en el user)
+          $push: { favPodiums: idPodium }, //? 2o param => ejecución (metemos id de PODIUM en el user)
         });
         try {
-          await Player.findByIdAndUpdate(idPlayer, {
-            //? aquí se actualiza el modelo de jugador para meter al user como like
+          await Podium.findByIdAndUpdate(idPodium, {
+            //? aquí se actualiza el modelo de PODIUM para meter al user como like
             $push: { likes: _id },
           });
 
@@ -1533,18 +1533,18 @@ const addFavPodium = async (req, res, next) => {
 
           return res.status(200).json({
             userUpdate: await User.findById(_id),
-            playerUpdate: await Player.findById(idPlayer),
-            action: `Se ha añadido el jugador ${elementPlayer.name} como favorito del usuario ${name}`,
+            podiumUpdate: await Podium.findById(idPodium),
+            action: `Se ha añadido el PODIUM ${elementPodium.name} como favorito del usuario ${name}`,
           });
         } catch (error) {
           return res.status(404).json({
-            error: "Error al añadir el User, al Jugador ❌",
+            error: "Error al añadir el User, al PODIUM ❌",
             message: error.message,
           });
         }
       } catch (error) {
         return res.status(404).json({
-          message: "Error al añadir el Jugador, al User ❌",
+          message: "Error al añadir el PODIUM, al User ❌",
           error: error.message,
         });
       }
@@ -1554,31 +1554,31 @@ const addFavPodium = async (req, res, next) => {
       setError(
         500,
         error.message ||
-          "Error general al hacer toggle de Jugadores Favoritos ❤️❌",
+          "Error general al hacer toggle de PODIUM Favoritos ❤️❌",
       ),
     );
   }
 };
 
-//! ------------------- ADD FAV FILTER ----------------------
+//! ------------------- ADD FAV LIFTER ----------------------
 const addFavLifter = async (req, res, next) => {
   try {
-    const { idPlayer } = req.params; //? --- recibimos el id del equipo que queremos darle like por el url
+    const { idLifter } = req.params; //? --- recibimos el id del equipo que queremos darle like por el url
     console.log("HE ENTRADO EN EL BACKEND")
-    console.log(idPlayer)
-    const elementPlayer = await Player.findById(idPlayer);
-    const { _id, favPlayers, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
+    console.log(idLifter)
+    const elementLifter = await Lifter.findById(idLifter);
+    const { _id, favLifters, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
 
-    if (favPlayers.includes(idPlayer)) {
+    if (favLifters.includes(idLifter)) {
       //! ------------- PULL -----------------
       try {
         await User.findByIdAndUpdate(_id, {
           //? actualizamos el usuario. 1r param => condición ()
-          $pull: { favPlayers: idPlayer }, //? 2o param => ejecución (sacamos id del jugador del user)
+          $pull: { favLifters: idLifter }, //? 2o param => ejecución (sacamos id del LIFTER del user)
         });
         try {
-          await Player.findByIdAndUpdate(idPlayer, {
-            //? aquí se actualiza el modelo de jugador para sacar al user como like
+          await Lifter.findByIdAndUpdate(idLifter, {
+            //? aquí se actualiza el modelo de lifter para sacar al user como like
             $pull: { likes: _id },
           });
 
@@ -1586,18 +1586,18 @@ const addFavLifter = async (req, res, next) => {
 
           return res.status(200).json({
             userUpdate: await User.findById(_id),
-            playerUpdate: await Player.findById(idPlayer),
-            action: `Se ha quitado el jugador ${elementPlayer.name} como favorito del usuario ${name}`,
+            lifterUpdate: await Lifter.findById(idLifter),
+            action: `Se ha quitado el LIFTER ${elementLifter.name} como favorito del usuario ${name}`,
           });
         } catch (error) {
           return res.status(404).json({
-            error: "Error al quitar el User, del Jugador ❌",
+            error: "Error al quitar el User, del LIFTER ❌",
             message: error.message,
           });
         }
       } catch (error) {
         return res.status(404).json({
-          message: "Error al quitar el Jugador, del User ❌",
+          message: "Error al quitar el LIFTER, del User ❌",
           error: error.message,
         });
       }
@@ -1606,11 +1606,11 @@ const addFavLifter = async (req, res, next) => {
       try {
         await User.findByIdAndUpdate(_id, {
           //? actualizamos el usuario. 1r param => condición ()
-          $push: { favPlayers: idPlayer }, //? 2o param => ejecución (metemos id de jugador en el user)
+          $push: { favLifters: idLifter }, //? 2o param => ejecución (metemos id de LIFTER en el user)
         });
         try {
-          await Player.findByIdAndUpdate(idPlayer, {
-            //? aquí se actualiza el modelo de jugador para meter al user como like
+          await Lifter.findByIdAndUpdate(idLifter, {
+            //? aquí se actualiza el modelo de LIFTER para meter al user como like
             $push: { likes: _id },
           });
 
@@ -1618,18 +1618,18 @@ const addFavLifter = async (req, res, next) => {
 
           return res.status(200).json({
             userUpdate: await User.findById(_id),
-            playerUpdate: await Player.findById(idPlayer),
-            action: `Se ha añadido el jugador ${elementPlayer.name} como favorito del usuario ${name}`,
+            lifterUpdate: await Lifter.findById(idLifter),
+            action: `Se ha añadido el LIFTER ${elementLifter.name} como favorito del usuario ${name}`,
           });
         } catch (error) {
           return res.status(404).json({
-            error: "Error al añadir el User, al Jugador ❌",
+            error: "Error al añadir el User, al LIFTER ❌",
             message: error.message,
           });
         }
       } catch (error) {
         return res.status(404).json({
-          message: "Error al añadir el Jugador, al User ❌",
+          message: "Error al añadir el LIFTER, al User ❌",
           error: error.message,
         });
       }
@@ -1639,31 +1639,31 @@ const addFavLifter = async (req, res, next) => {
       setError(
         500,
         error.message ||
-          "Error general al hacer toggle de Jugadores Favoritos ❤️❌",
+          "Error general al hacer toggle de LIFTER Favoritos ❤️❌",
       ),
     );
   }
 };
 
-//! -------------- ADD FAV WEIGHT CATEGORY -----------------
+//! ------------------- ADD FAV WEIGHT CATEGORY ----------------------
 const addFavWeightCategory = async (req, res, next) => {
   try {
-    const { idPlayer } = req.params; //? --- recibimos el id del equipo que queremos darle like por el url
+    const { idWeightCategory } = req.params; //? --- recibimos el id del equipo que queremos darle like por el url
     console.log("HE ENTRADO EN EL BACKEND")
-    console.log(idPlayer)
-    const elementPlayer = await Player.findById(idPlayer);
-    const { _id, favPlayers, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
+    console.log(idWeightCategory)
+    const elementWeightCategory = await WeightCategory.findById(idWeightCategory);
+    const { _id, favWeightCategory, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
 
-    if (favPlayers.includes(idPlayer)) {
+    if (favWeightCategory.includes(idWeightCategory)) {
       //! ------------- PULL -----------------
       try {
         await User.findByIdAndUpdate(_id, {
           //? actualizamos el usuario. 1r param => condición ()
-          $pull: { favPlayers: idPlayer }, //? 2o param => ejecución (sacamos id del jugador del user)
+          $pull: { favWeightCategory: idWeightCategory }, //? 2o param => ejecución (sacamos id del WEIGHT CATEGORY del user)
         });
         try {
-          await Player.findByIdAndUpdate(idPlayer, {
-            //? aquí se actualiza el modelo de jugador para sacar al user como like
+          await WeightCategory.findByIdAndUpdate(idWeightCategory, {
+            //? aquí se actualiza el modelo de weight category para sacar al user como like
             $pull: { likes: _id },
           });
 
@@ -1671,18 +1671,18 @@ const addFavWeightCategory = async (req, res, next) => {
 
           return res.status(200).json({
             userUpdate: await User.findById(_id),
-            playerUpdate: await Player.findById(idPlayer),
-            action: `Se ha quitado el jugador ${elementPlayer.name} como favorito del usuario ${name}`,
+            weightCategoryUpdate: await WeightCategory.findById(idWeightCategory),
+            action: `Se ha quitado el WEIGHT CATEGORY ${elementWeightCategory.name} como favorito del usuario ${name}`,
           });
         } catch (error) {
           return res.status(404).json({
-            error: "Error al quitar el User, del Jugador ❌",
+            error: "Error al quitar el User, del WEIGHT CATEGORY ❌",
             message: error.message,
           });
         }
       } catch (error) {
         return res.status(404).json({
-          message: "Error al quitar el Jugador, del User ❌",
+          message: "Error al quitar el WEIGHT CATEGORY, del User ❌",
           error: error.message,
         });
       }
@@ -1691,11 +1691,11 @@ const addFavWeightCategory = async (req, res, next) => {
       try {
         await User.findByIdAndUpdate(_id, {
           //? actualizamos el usuario. 1r param => condición ()
-          $push: { favPlayers: idPlayer }, //? 2o param => ejecución (metemos id de jugador en el user)
+          $push: { favWeightCategory: idWeightCategory }, //? 2o param => ejecución (metemos id de WEIGHT CATEGORY en el user)
         });
         try {
-          await Player.findByIdAndUpdate(idPlayer, {
-            //? aquí se actualiza el modelo de jugador para meter al user como like
+          await WeightCategory.findByIdAndUpdate(idWeightCategory, {
+            //? aquí se actualiza el modelo de WEIGHT CATEGORY para meter al user como like
             $push: { likes: _id },
           });
 
@@ -1703,18 +1703,18 @@ const addFavWeightCategory = async (req, res, next) => {
 
           return res.status(200).json({
             userUpdate: await User.findById(_id),
-            playerUpdate: await Player.findById(idPlayer),
-            action: `Se ha añadido el jugador ${elementPlayer.name} como favorito del usuario ${name}`,
+            weightCategoryUpdate: await WeightCategory.findById(idWeightCategory),
+            action: `Se ha añadido el WEIGHT CATEGORY ${elementWeightCategory.name} como favorito del usuario ${name}`,
           });
         } catch (error) {
           return res.status(404).json({
-            error: "Error al añadir el User, al Jugador ❌",
+            error: "Error al añadir el User, al WEIGHT CATEGORY ❌",
             message: error.message,
           });
         }
       } catch (error) {
         return res.status(404).json({
-          message: "Error al añadir el Jugador, al User ❌",
+          message: "Error al añadir el WEIGHT CATEGORY, al User ❌",
           error: error.message,
         });
       }
@@ -1724,7 +1724,7 @@ const addFavWeightCategory = async (req, res, next) => {
       setError(
         500,
         error.message ||
-          "Error general al hacer toggle de Jugadores Favoritos ❤️❌",
+          "Error general al hacer toggle de WEIGHT CATEGORY Favoritos ❤️❌",
       ),
     );
   }
@@ -1863,6 +1863,140 @@ const getFavPlayers = async (req, res, next) => {
     );
   }
 };
+
+
+
+//! ------------------- GET FAV RIDER ----------------------
+const getFavRiders = async (req, res, next) => {
+  console.log("HE ENTRADDDDOOOOO")
+  try {
+    const { id } = req.params; //?----------------------------------------- id del user por el param, vamos a buscar los fav riders de este user
+    const userById = await User.findById(id); //?------------------------ encontramos el user por el id
+    const usersFavRiders = userById.favRiders; //?--------------------- guardamos en variable los riders favoritos encontrando su direccion
+    const showRiders = await Rider.find({ _id: usersFavRiders }); //? -- le decimos que nos muestre los modelos de rider que tengan los id que hemos encontrado en el usuario del param
+    return res
+      .status(showRiders.length > 0 ? 200 : 404)
+      .json(
+        showRiders.length > 0
+          ? showRiders
+          : "No se han encontrado riders favoritos en el usuario ❌",
+      ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
+  } catch (error) {
+    return next(
+      setError(
+        500,
+        error.message ||
+          "Error general al buscar riders Favoritos en el Usuario ❤️❌",
+      ),
+    );
+  }
+};
+
+//! ------------------- GET FAV CIRCUIT ----------------------
+const getFavCircuits = async (req, res, next) => {
+  console.log("HE ENTRADDDDOOOOO")
+  try {
+    const { id } = req.params; //?----------------------------------------- id del user por el param, vamos a buscar los fav circuits de este user
+    const userById = await User.findById(id); //?------------------------ encontramos el user por el id
+    const usersFavCircuits = userById.favCircuits; //?--------------------- guardamos en variable los circuits favoritos encontrando su direccion
+    const showCircuits = await Circuit.find({ _id: usersFavCircuits }); //? -- le decimos que nos muestre los modelos de rider que tengan los id que hemos encontrado en el usuario del param
+    return res
+      .status(showCircuits.length > 0 ? 200 : 404)
+      .json(
+        showCircuits.length > 0
+          ? showCircuits
+          : "No se han encontrado circuits favoritos en el usuario ❌",
+      ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
+  } catch (error) {
+    return next(
+      setError(
+        500,
+        error.message ||
+          "Error general al buscar circuits Favoritos en el Usuario ❤️❌",
+      ),
+    );
+  }
+};
+
+//! ------------------- GET FAV PODIUM ----------------------
+const getFavPodium = async (req, res, next) => {
+  console.log("HE ENTRADDDDOOOOO")
+  try {
+    const { id } = req.params; //?----------------------------------------- id del user por el param, vamos a buscar los fav podiums de este user
+    const userById = await User.findById(id); //?------------------------ encontramos el user por el id
+    const usersFavPodiums = userById.favPodium; //?--------------------- guardamos en variable los podiums favoritos encontrando su direccion
+    const showPodiums = await Podium.find({ _id: usersFavPodiums }); //? -- le decimos que nos muestre los modelos de rider que tengan los id que hemos encontrado en el usuario del param
+    return res
+      .status(showPodiums.length > 0 ? 200 : 404)
+      .json(
+        showPodiums.length > 0
+          ? showPodiums
+          : "No se han encontrado podiums favoritos en el usuario ❌",
+      ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
+  } catch (error) {
+    return next(
+      setError(
+        500,
+        error.message ||
+          "Error general al buscar podiums Favoritos en el Usuario ❤️❌",
+      ),
+    );
+  }
+};
+
+//! ------------------- GET FAV LIFTER ----------------------
+const getFavLifter = async (req, res, next) => {
+  console.log("HE ENTRADDDDOOOOO")
+  try {
+    const { id } = req.params; //?----------------------------------------- id del user por el param, vamos a buscar los fav lifters de este user
+    const userById = await User.findById(id); //?------------------------ encontramos el user por el id
+    const usersFavLifters = userById.favLifters; //?--------------------- guardamos en variable los lifters favoritos encontrando su direccion
+    const showLifters = await Lifter.find({ _id: usersFavLifters }); //? -- le decimos que nos muestre los modelos de rider que tengan los id que hemos encontrado en el usuario del param
+    return res
+      .status(showLifters.length > 0 ? 200 : 404)
+      .json(
+        showLifters.length > 0
+          ? showLifters
+          : "No se han encontrado lifters favoritos en el usuario ❌",
+      ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
+  } catch (error) {
+    return next(
+      setError(
+        500,
+        error.message ||
+          "Error general al buscar lifters Favoritos en el Usuario ❤️❌",
+      ),
+    );
+  }
+};
+
+//! ------------------- GET FAV WEIGHT CATEGORY ----------------------
+const getFavWeightCategory = async (req, res, next) => {
+  console.log("HE ENTRADDDDOOOOO")
+  try {
+    const { id } = req.params; //?----------------------------------------- id del user por el param, vamos a buscar los fav weight categories de este user
+    const userById = await User.findById(id); //?------------------------ encontramos el user por el id
+    const usersFavWeightCategories = userById.favWeightCategories; //?--------------------- guardamos en variable los weight categories favoritos encontrando su direccion
+    const showWeightCategories = await WeightCategory.find({ _id: usersFavWeightCategories }); //? -- le decimos que nos muestre los modelos de rider que tengan los id que hemos encontrado en el usuario del param
+    return res
+      .status(showWeightCategories.length > 0 ? 200 : 404)
+      .json(
+        showWeightCategories.length > 0
+          ? showWeightCategories
+          : "No se han encontrado weight categories favoritos en el usuario ❌",
+      ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
+  } catch (error) {
+    return next(
+      setError(
+        500,
+        error.message ||
+          "Error general al buscar weight categories Favoritos en el Usuario ❤️❌",
+      ),
+    );
+  }
+};
+
+
 
 //! ------------------- GET FOLLOWERS ----------------------
 const getFollowers = async (req, res, next) => {
@@ -2013,9 +2147,19 @@ module.exports = {
   addFavPlayer,
   addFavEleven,
   addFavComment,
+  addFavRider,
+  addFavCircuit,
+  addFavPodium,
+  addFavLifter,
+  addFavWeightCategory,
   addFollow,
   getFavTeams,
   getFavPlayers,
+  getFavRiders,
+  getFavCircuits,
+  getFavPodium,
+  getFavLifter,
+  getFavWeightCategory,
   getFollowers,
   getFollowed,
   getFavElevens,
