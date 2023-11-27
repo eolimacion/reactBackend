@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Rider = mongoose.Schema;
+const Schema = mongoose.Schema;
 const RiderSchema = new Schema(
   {
     name: { type: String, unique: true, required: true },
@@ -24,7 +24,7 @@ const RiderSchema = new Schema(
     timestamps: true,
   },
 );
-const Player = mongoose.model("Rider", RiderSchema);
+const Rider = mongoose.model("Rider", RiderSchema);
 module.exports = Rider;
 
 
