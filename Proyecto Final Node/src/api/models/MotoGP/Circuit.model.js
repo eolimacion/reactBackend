@@ -10,7 +10,7 @@ const CircuitSchema = new Schema(
     image: { type: String, required: false },
 
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-    selected: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    selected: [{ type: mongoose.Schema.Types.ObjectId, ref: "Podium" }],
     fastestLap: [{ type: mongoose.Schema.Types.ObjectId, ref: "Rider" }, { type: Number, required: true }, { type: Number, required: true }],
     mostSuccessful: [{ type: mongoose.Schema.Types.ObjectId, ref: "Rider" }],
   },

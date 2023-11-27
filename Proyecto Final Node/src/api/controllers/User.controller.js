@@ -25,6 +25,12 @@ const Team = require("../models/Team.model");
 const User = require("../models/User.model");
 const Eleven = require("../models/Eleven.model");
 const Comment = require("../models/Comment.model");
+const Rider = require("../models/MotoGP/Rider.model")
+const Circuit = require("../models/MotoGP/Circuit.model")
+const Podium = require("../models/MotoGP/Podium.model");
+const Lifter = require("../models/Powerlifting/Lifter.model");
+const WeightCategory = require("../models/Powerlifting/WeightCategory.model");
+
 
 //todo -------------------------------------------------------------------------------------------------------
 
@@ -632,11 +638,20 @@ const update = async (req, res, next) => {
     patchUser.favPlayers = req.user.favPlayers;
     patchUser.favTeams = req.user.favTeams;
     patchUser.favElevens = req.user.favElevens;
+
+    patchUser.favRiders = req.user.favRiders;
+    patchUser.favCircuits = req.user.favCircuits;
+    patchUser.favPodiums = req.user.favPodiums;
+
+    patchUser.favLifters = req.user.favLifters;
+    patchUser.favWeightCategories = req.user.favWeightCategories;
+
     patchUser.comments = req.user.comments;
     patchUser.favComments = req.user.favComments;
     patchUser.followers = req.user.followers;
     patchUser.followed = req.user.followed;
     patchUser.yourteam = req.user.yourteam;
+    patchUser.yourPodium = req.user.yourPodium;
 
     if (req.body?.gender) {
       //? como el genero es enum, no se puede modificar a cualquier cosa, ponemos la función que pusimos en el update de los characters
@@ -735,7 +750,7 @@ const deleteUser = async (req, res, next) => {
           );
 
           try {
-            //? ---------------------------------------- ELIMINAMOS AL JUGADOR DEL ELEVEN
+            //? ---------------------------------------- ELIMINAMOS AL USER DEL ELEVEN
             await Eleven.updateMany(
               //? ---- ahora estamos cambiando en el model de Eleven para poder quitar el jugador que ya no existe de los likes
               { likes: id },
@@ -749,6 +764,156 @@ const deleteUser = async (req, res, next) => {
                 { likes: id }, //? --------------------------- queremos cambiar lo que sea que haya que cambiar en esta propiedad del model, si se omite se dice que se cambia cualquier conincidencia en todo el modelo. es la condición
                 { $pull: { likes: id } }, //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
               );
+
+              try {
+                //? ------------------------------------------ ELIMINAMOS AL USER DEL PLAYER
+                await Player.updateMany(
+                  //? ----- ahora estamos cambiando en el model de PLAYER para poder quitar el user que ya no existe
+                  { likes: id }, //? --------------------------- queremos cambiar lo que sea que haya que cambiar en esta propiedad del model, si se omite se dice que se cambia cualquier conincidencia en todo el modelo. es la condición
+                  { $pull: { likes: id } }, //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
+                );
+  
+                try {
+                  //? ------------------------------------------ ELIMINAMOS AL USER DEL RIDER
+                  await Rider.updateMany(
+                    //? ----- ahora estamos cambiando en el model de RIDER para poder quitar el user que ya no existe
+                    { likes: id }, //? --------------------------- queremos cambiar lo que sea que haya que cambiar en esta propiedad del model, si se omite se dice que se cambia cualquier conincidencia en todo el modelo. es la condición
+                    { $pull: { likes: id } }, //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
+                  );
+    
+                  try {
+                    //? ------------------------------------------ ELIMINAMOS AL USER DEL CIRCUIT
+                    await Circuit.updateMany(
+                      //? ----- ahora estamos cambiando en el model de CIRCUIT para poder quitar el user que ya no existe
+                      { likes: id }, //? --------------------------- queremos cambiar lo que sea que haya que cambiar en esta propiedad del model, si se omite se dice que se cambia cualquier conincidencia en todo el modelo. es la condición
+                      { $pull: { likes: id } }, //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
+                    );
+      
+                    try {
+                      //? ------------------------------------------ ELIMINAMOS AL USER DEL PODIUM
+                      await Player.updateMany(
+                        //? ----- ahora estamos cambiando en el model de PODIUM para poder quitar el user que ya no existe
+                        { likes: id }, //? --------------------------- queremos cambiar lo que sea que haya que cambiar en esta propiedad del model, si se omite se dice que se cambia cualquier conincidencia en todo el modelo. es la condición
+                        { $pull: { likes: id } }, //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
+                      );
+        
+                      try {
+                        //? ------------------------------------------ ELIMINAMOS AL USER DEL LIFTER
+                        await Lifter.updateMany(
+                          //? ----- ahora estamos cambiando en el model de LIFTER para poder quitar el user que ya no existe
+                          { likes: id }, //? --------------------------- queremos cambiar lo que sea que haya que cambiar en esta propiedad del model, si se omite se dice que se cambia cualquier conincidencia en todo el modelo. es la condición
+                          { $pull: { likes: id } }, //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
+                        );
+          
+                        try {
+                          //? ------------------------------------------ ELIMINAMOS AL USER DEL WEIGHTCATEGORY
+                          await WeightCategory.updateMany(
+                            //? ----- ahora estamos cambiando en el model de WEIGHTCATEGORY para poder quitar el user que ya no existe
+                            { likes: id }, //? --------------------------- queremos cambiar lo que sea que haya que cambiar en esta propiedad del model, si se omite se dice que se cambia cualquier conincidencia en todo el modelo. es la condición
+                            { $pull: { likes: id } }, //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
+                          );
+            
+                            try {
+                              const userForYourTeam = await User.findById(id)
+                              const yourTeamId = userForYourTeam.yourteam[0]
+                              if (userForYourTeam.length > 0) {
+                                return res.redirect(
+                                  307,
+                                  `http://localhost:8081/api/v1/eleven/delete/${yourTeamId}`, //? redirigimos al delete eleven porque si tiene un equipo a su nombre, ese tmb se borra
+                                )
+                              }
+
+                              try {
+                                const allUserComments = await Comment.find({creator: id}) //? pilla los comments que haya creado el usuario q estamos borrando
+                                if (allUserComments.length > 0) {
+                                  for (let comment of allUserComments) {
+                                    return res.redirect(
+                                      307,
+                                      `http://localhost:8081/api/v1/comment/delete/${comment._id}`, //? redirigimos al delete comment porque si ha creado comments, tmb se borran. por cada comment que encuentre, se repite el redirect para borrarlos a todos
+                                    )
+                                  }
+                                }
+  
+                              } catch (error) {
+                                return next(
+                                  setError(
+                                    500,
+                                    error.message ||
+                                      "Error al eliminar los comments (enteros) del user ❌",
+                                  ),
+                                );
+                              }
+
+                            } catch (error) {
+                              return next(
+                                setError(
+                                  500,
+                                  error.message ||
+                                    "Error al eliminar el eleven (entero) del user ❌",
+                                ),
+                              );
+                            }
+                          
+                        } catch (error) {
+                          return next(
+                            setError(
+                              500,
+                              error.message ||
+                                "Error al eliminar el user (like) del weight category ❌",
+                            ),
+                          );
+                        }
+                        
+                      } catch (error) {
+                        return next(
+                          setError(
+                            500,
+                            error.message ||
+                              "Error al eliminar el user (like) del lifter ❌",
+                          ),
+                        );
+                      }
+                      
+                    } catch (error) {
+                      return next(
+                        setError(
+                          500,
+                          error.message ||
+                            "Error al eliminar el user (like) del podium ❌",
+                        ),
+                      );
+                    }
+                    
+                  } catch (error) {
+                    return next(
+                      setError(
+                        500,
+                        error.message ||
+                          "Error al eliminar el user (like) del circuit ❌",
+                      ),
+                    );
+                  }
+                  
+                } catch (error) {
+                  return next(
+                    setError(
+                      500,
+                      error.message ||
+                        "Error al eliminar el user (like) del rider ❌",
+                    ),
+                  );
+                }
+                
+              } catch (error) {
+                return next(
+                  setError(
+                    500,
+                    error.message ||
+                      "Error al eliminar el user (like) del player ❌",
+                  ),
+                );
+              }
+
             } catch (error) {
               return next(
                 setError(
@@ -1138,6 +1303,435 @@ const addFavComment = async (req, res, next) => {
   }
 };
 
+
+
+//! ------------------- ADD FAV RIDER ----------------------
+const addFavRider = async (req, res, next) => {
+  try {
+    const { idRider } = req.params; //? --- recibimos el id del equipo que queremos darle like por el url
+    console.log("HE ENTRADO EN EL BACKEND")
+    console.log(idRider)
+    const elementRider = await Rider.findById(idRider);
+    const { _id, favRiders, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
+
+    if (favRiders.includes(idRider)) {
+      //! ------------- PULL -----------------
+      try {
+        await User.findByIdAndUpdate(_id, {
+          //? actualizamos el usuario. 1r param => condición ()
+          $pull: { favRiders: idRider }, //? 2o param => ejecución (sacamos id del RIDER del user)
+        });
+        try {
+          await Rider.findByIdAndUpdate(idRider, {
+            //? aquí se actualiza el modelo de rider para sacar al user como like
+            $pull: { likes: _id },
+          });
+
+          // todo --------- RESPONSE ------------- //
+
+          return res.status(200).json({
+            userUpdate: await User.findById(_id),
+            riderUpdate: await Rider.findById(idRider),
+            action: `Se ha quitado el RIDER ${elementRider.name} como favorito del usuario ${name}`,
+          });
+        } catch (error) {
+          return res.status(404).json({
+            error: "Error al quitar el User, del RIDER ❌",
+            message: error.message,
+          });
+        }
+      } catch (error) {
+        return res.status(404).json({
+          message: "Error al quitar el RIDER, del User ❌",
+          error: error.message,
+        });
+      }
+    } else {
+      //! ---------- PUSH ----------------
+      try {
+        await User.findByIdAndUpdate(_id, {
+          //? actualizamos el usuario. 1r param => condición ()
+          $push: { favRiders: idRider }, //? 2o param => ejecución (metemos id de RIDER en el user)
+        });
+        try {
+          await Rider.findByIdAndUpdate(idRider, {
+            //? aquí se actualiza el modelo de RIDER para meter al user como like
+            $push: { likes: _id },
+          });
+
+          // todo --------- RESPONSE ------------- //
+
+          return res.status(200).json({
+            userUpdate: await User.findById(_id),
+            riderUpdate: await Rider.findById(idRider),
+            action: `Se ha añadido el RIDER ${elementRider.name} como favorito del usuario ${name}`,
+          });
+        } catch (error) {
+          return res.status(404).json({
+            error: "Error al añadir el User, al RIDER ❌",
+            message: error.message,
+          });
+        }
+      } catch (error) {
+        return res.status(404).json({
+          message: "Error al añadir el RIDER, al User ❌",
+          error: error.message,
+        });
+      }
+    }
+  } catch (error) {
+    return next(
+      setError(
+        500,
+        error.message ||
+          "Error general al hacer toggle de RIDER Favoritos ❤️❌",
+      ),
+    );
+  }
+};
+
+//! ------------------- ADD FAV CIRCUIT ----------------------
+const addFavCircuit = async (req, res, next) => {
+  try {
+    const { idCircuit } = req.params; //? --- recibimos el id del equipo que queremos darle like por el url
+    console.log("HE ENTRADO EN EL BACKEND")
+    console.log(idCircuit)
+    const elementCircuit = await Circuit.findById(idCircuit);
+    const { _id, favCircuits, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
+
+    if (favCircuits.includes(idCircuit)) {
+      //! ------------- PULL -----------------
+      try {
+        await User.findByIdAndUpdate(_id, {
+          //? actualizamos el usuario. 1r param => condición ()
+          $pull: { favCircuits: idCircuit }, //? 2o param => ejecución (sacamos id del CIRCUIT del user)
+        });
+        try {
+          await Circuit.findByIdAndUpdate(idCircuit, {
+            //? aquí se actualiza el modelo de circuit para sacar al user como like
+            $pull: { likes: _id },
+          });
+
+          // todo --------- RESPONSE ------------- //
+
+          return res.status(200).json({
+            userUpdate: await User.findById(_id),
+            circuitUpdate: await Circuit.findById(idCircuit),
+            action: `Se ha quitado el CIRCUIT ${elementCircuit.name} como favorito del usuario ${name}`,
+          });
+        } catch (error) {
+          return res.status(404).json({
+            error: "Error al quitar el User, del CIRCUIT ❌",
+            message: error.message,
+          });
+        }
+      } catch (error) {
+        return res.status(404).json({
+          message: "Error al quitar el CIRCUIT, del User ❌",
+          error: error.message,
+        });
+      }
+    } else {
+      //! ---------- PUSH ----------------
+      try {
+        await User.findByIdAndUpdate(_id, {
+          //? actualizamos el usuario. 1r param => condición ()
+          $push: { favCircuits: idCircuit }, //? 2o param => ejecución (metemos id de CIRCUIT en el user)
+        });
+        try {
+          await Circuit.findByIdAndUpdate(idCircuit, {
+            //? aquí se actualiza el modelo de CIRCUIT para meter al user como like
+            $push: { likes: _id },
+          });
+
+          // todo --------- RESPONSE ------------- //
+
+          return res.status(200).json({
+            userUpdate: await User.findById(_id),
+            circuitUpdate: await Circuit.findById(idCircuit),
+            action: `Se ha añadido el CIRCUIT ${elementCircuit.name} como favorito del usuario ${name}`,
+          });
+        } catch (error) {
+          return res.status(404).json({
+            error: "Error al añadir el User, al CIRCUIT ❌",
+            message: error.message,
+          });
+        }
+      } catch (error) {
+        return res.status(404).json({
+          message: "Error al añadir el CIRCUIT, al User ❌",
+          error: error.message,
+        });
+      }
+    }
+  } catch (error) {
+    return next(
+      setError(
+        500,
+        error.message ||
+          "Error general al hacer toggle de CIRCUIT Favoritos ❤️❌",
+      ),
+    );
+  }
+};
+
+//! ------------------- ADD FAV PODIUM ----------------------
+const addFavPodium = async (req, res, next) => {
+  try {
+    const { idPlayer } = req.params; //? --- recibimos el id del equipo que queremos darle like por el url
+    console.log("HE ENTRADO EN EL BACKEND")
+    console.log(idPlayer)
+    const elementPlayer = await Player.findById(idPlayer);
+    const { _id, favPlayers, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
+
+    if (favPlayers.includes(idPlayer)) {
+      //! ------------- PULL -----------------
+      try {
+        await User.findByIdAndUpdate(_id, {
+          //? actualizamos el usuario. 1r param => condición ()
+          $pull: { favPlayers: idPlayer }, //? 2o param => ejecución (sacamos id del jugador del user)
+        });
+        try {
+          await Player.findByIdAndUpdate(idPlayer, {
+            //? aquí se actualiza el modelo de jugador para sacar al user como like
+            $pull: { likes: _id },
+          });
+
+          // todo --------- RESPONSE ------------- //
+
+          return res.status(200).json({
+            userUpdate: await User.findById(_id),
+            playerUpdate: await Player.findById(idPlayer),
+            action: `Se ha quitado el jugador ${elementPlayer.name} como favorito del usuario ${name}`,
+          });
+        } catch (error) {
+          return res.status(404).json({
+            error: "Error al quitar el User, del Jugador ❌",
+            message: error.message,
+          });
+        }
+      } catch (error) {
+        return res.status(404).json({
+          message: "Error al quitar el Jugador, del User ❌",
+          error: error.message,
+        });
+      }
+    } else {
+      //! ---------- PUSH ----------------
+      try {
+        await User.findByIdAndUpdate(_id, {
+          //? actualizamos el usuario. 1r param => condición ()
+          $push: { favPlayers: idPlayer }, //? 2o param => ejecución (metemos id de jugador en el user)
+        });
+        try {
+          await Player.findByIdAndUpdate(idPlayer, {
+            //? aquí se actualiza el modelo de jugador para meter al user como like
+            $push: { likes: _id },
+          });
+
+          // todo --------- RESPONSE ------------- //
+
+          return res.status(200).json({
+            userUpdate: await User.findById(_id),
+            playerUpdate: await Player.findById(idPlayer),
+            action: `Se ha añadido el jugador ${elementPlayer.name} como favorito del usuario ${name}`,
+          });
+        } catch (error) {
+          return res.status(404).json({
+            error: "Error al añadir el User, al Jugador ❌",
+            message: error.message,
+          });
+        }
+      } catch (error) {
+        return res.status(404).json({
+          message: "Error al añadir el Jugador, al User ❌",
+          error: error.message,
+        });
+      }
+    }
+  } catch (error) {
+    return next(
+      setError(
+        500,
+        error.message ||
+          "Error general al hacer toggle de Jugadores Favoritos ❤️❌",
+      ),
+    );
+  }
+};
+
+//! ------------------- ADD FAV FILTER ----------------------
+const addFavLifter = async (req, res, next) => {
+  try {
+    const { idPlayer } = req.params; //? --- recibimos el id del equipo que queremos darle like por el url
+    console.log("HE ENTRADO EN EL BACKEND")
+    console.log(idPlayer)
+    const elementPlayer = await Player.findById(idPlayer);
+    const { _id, favPlayers, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
+
+    if (favPlayers.includes(idPlayer)) {
+      //! ------------- PULL -----------------
+      try {
+        await User.findByIdAndUpdate(_id, {
+          //? actualizamos el usuario. 1r param => condición ()
+          $pull: { favPlayers: idPlayer }, //? 2o param => ejecución (sacamos id del jugador del user)
+        });
+        try {
+          await Player.findByIdAndUpdate(idPlayer, {
+            //? aquí se actualiza el modelo de jugador para sacar al user como like
+            $pull: { likes: _id },
+          });
+
+          // todo --------- RESPONSE ------------- //
+
+          return res.status(200).json({
+            userUpdate: await User.findById(_id),
+            playerUpdate: await Player.findById(idPlayer),
+            action: `Se ha quitado el jugador ${elementPlayer.name} como favorito del usuario ${name}`,
+          });
+        } catch (error) {
+          return res.status(404).json({
+            error: "Error al quitar el User, del Jugador ❌",
+            message: error.message,
+          });
+        }
+      } catch (error) {
+        return res.status(404).json({
+          message: "Error al quitar el Jugador, del User ❌",
+          error: error.message,
+        });
+      }
+    } else {
+      //! ---------- PUSH ----------------
+      try {
+        await User.findByIdAndUpdate(_id, {
+          //? actualizamos el usuario. 1r param => condición ()
+          $push: { favPlayers: idPlayer }, //? 2o param => ejecución (metemos id de jugador en el user)
+        });
+        try {
+          await Player.findByIdAndUpdate(idPlayer, {
+            //? aquí se actualiza el modelo de jugador para meter al user como like
+            $push: { likes: _id },
+          });
+
+          // todo --------- RESPONSE ------------- //
+
+          return res.status(200).json({
+            userUpdate: await User.findById(_id),
+            playerUpdate: await Player.findById(idPlayer),
+            action: `Se ha añadido el jugador ${elementPlayer.name} como favorito del usuario ${name}`,
+          });
+        } catch (error) {
+          return res.status(404).json({
+            error: "Error al añadir el User, al Jugador ❌",
+            message: error.message,
+          });
+        }
+      } catch (error) {
+        return res.status(404).json({
+          message: "Error al añadir el Jugador, al User ❌",
+          error: error.message,
+        });
+      }
+    }
+  } catch (error) {
+    return next(
+      setError(
+        500,
+        error.message ||
+          "Error general al hacer toggle de Jugadores Favoritos ❤️❌",
+      ),
+    );
+  }
+};
+
+//! -------------- ADD FAV WEIGHT CATEGORY -----------------
+const addFavWeightCategory = async (req, res, next) => {
+  try {
+    const { idPlayer } = req.params; //? --- recibimos el id del equipo que queremos darle like por el url
+    console.log("HE ENTRADO EN EL BACKEND")
+    console.log(idPlayer)
+    const elementPlayer = await Player.findById(idPlayer);
+    const { _id, favPlayers, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
+
+    if (favPlayers.includes(idPlayer)) {
+      //! ------------- PULL -----------------
+      try {
+        await User.findByIdAndUpdate(_id, {
+          //? actualizamos el usuario. 1r param => condición ()
+          $pull: { favPlayers: idPlayer }, //? 2o param => ejecución (sacamos id del jugador del user)
+        });
+        try {
+          await Player.findByIdAndUpdate(idPlayer, {
+            //? aquí se actualiza el modelo de jugador para sacar al user como like
+            $pull: { likes: _id },
+          });
+
+          // todo --------- RESPONSE ------------- //
+
+          return res.status(200).json({
+            userUpdate: await User.findById(_id),
+            playerUpdate: await Player.findById(idPlayer),
+            action: `Se ha quitado el jugador ${elementPlayer.name} como favorito del usuario ${name}`,
+          });
+        } catch (error) {
+          return res.status(404).json({
+            error: "Error al quitar el User, del Jugador ❌",
+            message: error.message,
+          });
+        }
+      } catch (error) {
+        return res.status(404).json({
+          message: "Error al quitar el Jugador, del User ❌",
+          error: error.message,
+        });
+      }
+    } else {
+      //! ---------- PUSH ----------------
+      try {
+        await User.findByIdAndUpdate(_id, {
+          //? actualizamos el usuario. 1r param => condición ()
+          $push: { favPlayers: idPlayer }, //? 2o param => ejecución (metemos id de jugador en el user)
+        });
+        try {
+          await Player.findByIdAndUpdate(idPlayer, {
+            //? aquí se actualiza el modelo de jugador para meter al user como like
+            $push: { likes: _id },
+          });
+
+          // todo --------- RESPONSE ------------- //
+
+          return res.status(200).json({
+            userUpdate: await User.findById(_id),
+            playerUpdate: await Player.findById(idPlayer),
+            action: `Se ha añadido el jugador ${elementPlayer.name} como favorito del usuario ${name}`,
+          });
+        } catch (error) {
+          return res.status(404).json({
+            error: "Error al añadir el User, al Jugador ❌",
+            message: error.message,
+          });
+        }
+      } catch (error) {
+        return res.status(404).json({
+          message: "Error al añadir el Jugador, al User ❌",
+          error: error.message,
+        });
+      }
+    }
+  } catch (error) {
+    return next(
+      setError(
+        500,
+        error.message ||
+          "Error general al hacer toggle de Jugadores Favoritos ❤️❌",
+      ),
+    );
+  }
+};
+
+
+
 //! ------------------- ADD FOLLOW --------------------
 const addFollow = async (req, res, next) => {
   try {
@@ -1369,7 +1963,7 @@ const getFavComments = async (req, res, next) => {
   }
 };
 
-//! ------------------- GET FAV COMMENTS ----------------------
+//! ------------------- GET COMMENTS ----------------------
 const getComments = async (req, res, next) => {
   try {
     const { id } = req.params; //?-------------------------------------------- id del user por el param, vamos a buscar los favcomments de este user
