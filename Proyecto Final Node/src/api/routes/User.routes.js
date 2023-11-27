@@ -24,10 +24,20 @@ const {
   addFavTeam,
   addFavPlayer,
   addFavEleven,
+  addFavRider,
+  addFavCircuit,
+  addFavPodium,
+  addFavLifter,
+  addFavWeightCategory,
   addFavComment,
   addFollow,
   getFavTeams,
   getFavPlayers,
+  getFavRiders,
+  getFavCircuits,
+  getFavPodiums,
+  getFavLifters,
+  getFavWeightCategory,
   getFollowers,
   getFollowed,
   getFavElevens,
@@ -60,11 +70,20 @@ UserRoutes.delete('/', [isAuth], deleteUser);
 //todo ------- EXTRA
 UserRoutes.patch('/toggleTeam/:idTeam', [isAuth], addFavTeam);
 UserRoutes.patch('/togglePlayer/:idPlayer', [isAuth], addFavPlayer);
-UserRoutes.patch('/toggleEleven/:idEleven', [isAuth], addFavEleven);
+UserRoutes.patch('/toggleRider/:idRider', [isAuth], addFavRider);
+UserRoutes.patch('/toggleCircuit/:idCircuit', [isAuth], addFavCircuit);
+UserRoutes.patch('/togglePodium/:idPodium', [isAuth], addFavPodium);
+UserRoutes.patch('/toggleLifter/:idLifter', [isAuth], addFavLifter);
+UserRoutes.patch('/toggleWeightCategory/:idWeightCategory', [isAuth], addFavWeightCategory);
 UserRoutes.patch('/toggleComment/:idComment', [isAuth], addFavComment);
 UserRoutes.patch('/toggleFollow/:idUser', [isAuth], addFollow);
 UserRoutes.get('/favTeams/:id', [isAuth], [isFollower], getFavTeams);
 UserRoutes.get('/favPlayers/:id', [isAuth], [isFollower], getFavPlayers);
+UserRoutes.get('/favRiders/:id', [isAuth], [isFollower], getFavRiders);
+UserRoutes.get('/favCircuits/:id', [isAuth], [isFollower], getFavCircuits);
+UserRoutes.get('/favPodiums/:id', [isAuth], [isFollower], getFavPodiums);
+UserRoutes.get('/favLifters/:id', [isAuth], [isFollower], getFavLifters);
+UserRoutes.get('/favWeightCategory/:id', [isAuth], [isFollower], getFavWeightCategory);
 UserRoutes.get('/followers/:id', [isAuth], [isFollower], getFollowers);
 UserRoutes.get('/followed/:id', [isAuth], [isFollower], getFollowed);
 UserRoutes.get('/favElevens/:id', [isAuth], [isFollower], getFavElevens);
