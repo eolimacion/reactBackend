@@ -35,10 +35,25 @@ app.use("/api/v1/teams/", TeamRoutes)
 const UserRoutes = require("./src/api/routes/User.routes");
 app.use("/api/v1/users/", UserRoutes);
 
+//* 6.1. --------- RUTAS MOTO--------------------------------------
+const CircuitRoutes = require("./src/api/routes/MotoGP/Circuit.routes");
+app.use("/api/v1/moto/", CircuitRoutes);
+
+const RiderRoutes = require("./src/api/routes/MotoGP/Rider.routes");
+app.use("/api/v1/moto/", RiderRoutes);
+
+const PodiumRoutes = require("./src/api/routes/MotoGP/Podium.routes");
+app.use("/api/v1/moto/", PodiumRoutes);
+
+
+//*  -----------------------------------------------------------
+
+
 const ElevenRoutes = require("./src/api/routes/Eleven.routes");
 app.use("/api/v1/eleven/", ElevenRoutes);
 
 const CommentRoutes = require("./src/api/routes/Comment.routes");
+
 app.use("/api/v1/comment/", CommentRoutes);
 
 //! 7. --------- ERRORES
