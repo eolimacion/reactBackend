@@ -4,7 +4,7 @@ const Lifter = require('../../models/Powerlifting/Lifter.model');
 const WeightCategory = require('../../models/Powerlifting/WeightCategory.model');
 
 //?------------------------- utils -------------------------------
-
+const { enumGenderOk, enumWeightCatOk } = require('../../../utils/enumOk');
 //?----------------------- middleware -----------------------------
 
 //?------------------------ librería ------------------------------
@@ -13,7 +13,7 @@ const WeightCategory = require('../../models/Powerlifting/WeightCategory.model')
 
 //?------------------------- helpers ------------------------------
 const setError = require('../../../helpers/handle-error');
-const { enumGenderOk } = require('../../../utils/enumOk');
+
 
 
 
@@ -137,13 +137,19 @@ const createWeightCategory = async (req, res, next) => {
   try {
     await WeightCategory.syncIndexes();
     const newWeightCategory = new WeightCategory(req.body);
+
+    if(enumWeightCatOk(req.body.weight)){
+
     const saveWeightCategory = newWeightCategory.save();
 
     if (saveWeightCategory) {
-      return res.status(200).json(saveWeightCategory);
+      return res.status(200).json(newWeightCategory);
     } else {
       return res.status(404).json('Couldnt create weight category');
     }
+  }else{
+    return res.status(404).json('Couldnt create weight category');
+  }
   } catch (error) {
     return next(setError(500, error.message || 'Error to create'));
   }
