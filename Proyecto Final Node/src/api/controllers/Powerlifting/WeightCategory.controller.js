@@ -1,5 +1,6 @@
 //?------------------------ modelos ------------------------------
 const User = require('../../models/User.model');
+const Lifter = require('../../models/Powerlifting/Lifter.model');
 const WeightCategory = require('../../models/Powerlifting/WeightCategory.model');
 
 //?------------------------- utils -------------------------------
@@ -13,6 +14,7 @@ const WeightCategory = require('../../models/Powerlifting/WeightCategory.model')
 //?------------------------- helpers ------------------------------
 const setError = require('../../../helpers/handle-error');
 const { enumGenderOk } = require('../../../utils/enumOk');
+
 
 
 //?---------------------------------------------------------------------------------
@@ -49,6 +51,70 @@ const getWeightCategoryById = async (req, res) => {
         return next(setError(500, error.message || 'Error to get'))
     }
   };
+
+
+//?---------------------------------------------------------------------------------
+//! ---------------------------- SORT BY GENDER ------------------------------------
+//?---------------------------------------------------------------------------------
+
+const getWeightCategoryByGender = async (req, res, next) => {
+   try {
+    const { gender } = req.params
+        
+    const weightCatByGender = await WeightCategory.find({ gender })    //?-------- te devuelve solo uno????
+
+        if (weightCatByGender.length > 0) {
+
+            weightCatByGender.sort((a, b)=> a.weight - b.weight)
+            console.log(weightCatByGender)
+
+
+            return res.status(200).json(weightCatByGender);
+          } else {
+            return res
+              .status(404)
+              .json('not found');
+          }
+        } catch (error) {
+            return next(setError(500, error.message || 'Error to get'))
+        }
+  };
+
+//?---------------------------------------------------------------------------------
+//! ------------------------- GET LIFTERS BY CATEGORY ------------------------------
+//?---------------------------------------------------------------------------------
+
+const lifterByCategory = async (req, res, next) => {
+    try {
+      const { id } = req.params; // ID weightCategory
+      const weightCategory = await WeightCategory.findById(id);
+      if (weightCategory) {
+        let lifterByCategoryArr = [];
+        const lifterByCategory = weightCategory.lifters;
+  
+        Promise.all(
+            lifterByCategory.map(async (lifterId) => {
+            console.log('entro');
+            try {
+              const lifter = await Lifter.findById(lifterId);
+              lifterByCategoryArr.push(lifter);
+            } catch (error) {
+                return next(setError(500, error.message || 'General error'));
+            }
+          })
+        ).then(async () => {
+          return res.status(200).json(lifterByCategoryArr);
+        });
+      } else {
+        return res.status(404).json('not found');
+      }
+    } catch (error) {
+      return next(
+        setError(500, error.message || 'Error finding')
+      );
+    }
+  };
+  
 
 
 
@@ -164,6 +230,65 @@ const updateWeightCategory = async (req, res, next) => {
 
 
 
+//?---------------------------------------------------------------------------------
+//! ---------------------------- TOGGLE LIFTER------------------------------------
+//?-------------------------------- update -----------------------------------------
+
+const toggleLifter = async (req, res, next) => {
+    //lo vamos a localizar con un id
+    const { id } = req.params; // weightCategory
+    const { lifters } = req.body; // lifter
+    const weightCategoryById = await WeightCategory.findById(id);
+    if (weightCategoryById) {
+      const arrayIdLifter = lifters.split(',');
+      //recorremos el array creado con un mapeo y dentro de una promesa para manejar asincronías
+      // console.log(bookById);
+      Promise.all(
+        arrayIdLifter.map(async (lifter) => {
+          console.log(lifter);
+          if (weightCategoryById.lifters.includes(lifter)) {
+            try {
+              await WeightCategory.findByIdAndUpdate(id, {
+                $pull: { lifters: lifter },
+              });
+              try {
+                await Lifter.findByIdAndUpdate(lifter, {
+                  $pull: { weightCategory: id },
+                });
+              } catch (error) {
+                return next(setError(500, error.message || 'General error to toggle pull'));
+              }
+            } catch (error) {
+                return next(setError(500, error.message || 'General error to toggle pull'));
+            }
+          } else {
+            try {
+              await WeightCategory.findByIdAndUpdate(id, {
+                $push: { lifters: lifter },
+              });
+              try {
+                await Lifter.findByIdAndUpdate(lifter, {
+                    $push: { weightCategory: id },
+                  });
+                } catch (error) {
+                    return next(setError(500, error.message || 'General error to toggle push'));
+                  }
+                } catch (error) {
+                    return next(setError(500, error.message || 'General error to toggle push'));
+                }
+          }
+        })
+      ).then(async () => {
+        return res.status(200).json({
+          dataUpdate: await Genre.findById(id).populate('authors'),
+        });
+      });
+    } else {
+      return res.status(404).json('this lifter does not exist');
+    }
+  };
+
+
 
 
 
@@ -176,46 +301,33 @@ const updateWeightCategory = async (req, res, next) => {
 //! -------------------------------- DELETE ----------------------------------------
 //?---------------------------------------------------------------------------------
 
-const deleteGenre = async (req, res, next) => {
+const deleteWeightCategory = async (req, res, next) => {        
     try {
       const { id } = req.params;
-      await Genre.findByIdAndDelete(id);
+      await WeightCategory.findByIdAndDelete(id);
   
       try {
-        await Book.updateMany({ authors: id }, { $pull: { authors: id } });
-        try {
-          await Author.updateMany({ genres: id }, { $pull: { genres: id } });
+        await Lifter.updateMany({ weightCategory: id }, { $pull: { weightCategory: id } });
+
           try {
             await User.updateMany(
-              { favGenres: id },
-              { $pull: { favGenres: id } }
+              { favWeightCategories: id },
+              { $pull: { favWeightCategories: id } }
             );
   
-            const genreDeleted = await Genre.findById(id);
+            const weightCategoryDeleted = await WeightCategory.findById(id);
             return res
-              .status(genreDeleted ? 404 : 200)
+              .status(weightCategoryDeleted ? 404 : 200)
               .json(
-                genreDeleted
+                weightCategoryDeleted
                   ? 'error deleting genre'
-                  : 'this genre no longer exists'
+                  : 'this weight category no longer exists'
               );
           } catch (error) {
-            return res.status(404).json({
-              error: 'error catch updating user',
-              message: error.message,
-            });
+            return next(setError(500, error.message || 'Error to delete'));
           }
-        } catch (error) {
-          return res.status(404).json({
-            error: 'error catch updating authors',
-            message: error.message,
-          });
-        }
       } catch (error) {
-        return res.status(404).json({
-          error: 'error catch updating book',
-          message: error.message,
-        });
+        return next(setError(500, error.message || 'Error to delete'));
       }
     } catch (error) {
       return next(setError(500, error.message || 'Error to delete'));
@@ -228,5 +340,9 @@ module.exports= {
     getWeightCategoryById,
     getAllWeightCategories,
     createWeightCategory,
-    updateWeightCategory
+    updateWeightCategory,
+    toggleLifter,
+    getWeightCategoryByGender,
+    lifterByCategory,
+    deleteWeightCategory
 }
