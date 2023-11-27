@@ -280,7 +280,7 @@ const toggleLifter = async (req, res, next) => {
         })
       ).then(async () => {
         return res.status(200).json({
-          dataUpdate: await Genre.findById(id).populate('authors'),
+          dataUpdate: await WeightCategory.findById(id).populate('lifters'),
         });
       });
     } else {
