@@ -55,7 +55,7 @@ const PodiumRoutes = require("./src/api/routes/MotoGP/Podium.routes");
 app.use("/api/v1/podium/", PodiumRoutes);
 
 
-//* 6.1. --------- RUTAS POWER--------------------------------------
+// //* 6.1. --------- RUTAS POWER--------------------------------------
 
 const LifterRoutes = require("./src/api/routes/Powerlifting/Lifter.routes");
 app.use("/api/v1/lifter/", LifterRoutes);
