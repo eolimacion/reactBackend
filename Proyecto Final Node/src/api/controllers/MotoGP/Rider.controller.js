@@ -303,6 +303,119 @@ const deleteRider = async (req, res, next) => {
     }
 };
 
+// todo -----------------------------------------------------
+// todo -------------- EXTRA CONTROLLERS --------------------
+// todo -----------------------------------------------------
+
+//!----------SORT GENERAL DESCENDING --------------
+
+const sortRidersByDescending = async (req, res, next) => {
+    try {
+        const {stat} = req.params;
+        const ridersArray = await Rider.find().populate("circuits likes selected");
+        switch (stat) {
+            case "number":
+            case "age":
+            case "polesSeason":
+            case "points":
+            case "victoriesSeason":
+            case "victoriesCarrer":
+            case "championshipsCarrer":
+            case "rating":
+                ridersArray.sort((a,b) => {
+                    return b[stat] - a[stat];
+                });
+                break;
+            case "likes":
+                ridersArray.sort((a,b) => {
+                    return b[stat].length - a[stat].length
+                })
+                break;
+            case "name":
+                ridersArray.sort((a,b) => {
+                    a = a[stat].toLowerCase();
+                    b = b[stat].toLowerCase();
+                    return a[stat] < b[stat] ? -1 : 1;
+                });
+                break;
+            default:
+                return res
+                .status(404)
+                .json(
+                "La propiedad por la que quiere ordenar no existe/está mal escrita ❌, compruebe el modelo de datos para checkear como se escribe",
+                );
+        }
+        return res
+        .status(ridersArray.length > 0 ? 200 : 404)
+        .json(
+          ridersArray.length > 0
+          ? ridersArray
+          : "No se han encontrado riders en la DB/BackEnd ❌",
+      );
+    } catch (error) {
+        return next(
+            setError(
+              500,
+              error.message ||
+                `Error general al ordenar Riders de forma Descendiente ❌`,
+            ),
+          );
+    }
+}
+
+
+//!----------------- SORT GENERAL ASCENDING --------------
+
+const sortRidersByAscending = async (req, res, next) => {
+    try {
+        const {stat} = req.params;
+        const ridersArray = await Rider.find().populate("circuits likes selected");
+        switch (stat) {
+            case "number":
+            case "age":
+            case "polesSeason":
+            case "points":
+            case "victoriesSeason":
+            case "victoriesCarrer":
+            case "championshipsCarrer":
+            case "rating":
+                ridersArray.sort((a,b) => {
+                    return a[stat] - b[stat];
+                });
+                break;
+
+            case "name":
+                ridersArray.sort((a,b) => {
+                    a = a[stat].toLowerCase();
+                    b = b[stat].toLowerCase();
+                    return a[stat] > b[stat] ? -1 : 1;
+                });
+                break;
+            default:
+                return res
+                .status(404)
+                .json(
+                "La propiedad por la que quiere ordenar no existe/está mal escrita ❌, compruebe el modelo de datos para checkear como se escribe",
+                );
+        }
+        return res
+        .status(ridersArray.length > 0 ? 200 : 404)
+        .json(
+          ridersArray.length > 0
+          ? ridersArray
+          : "No se han encontrado riders en la DB/BackEnd ❌",
+      );
+    } catch (error) {
+        return next(
+            setError(
+              500,
+              error.message ||
+                `Error general al ordenar Riders de forma Descendiente ❌`,
+            ),
+          );
+    }
+}
+
 module.exports = {
     create,
     getById,
@@ -310,4 +423,6 @@ module.exports = {
     getByName,
     update,
     deleteRider,
+    sortRidersByAscending,
+    sortRidersByDescending,
 };
