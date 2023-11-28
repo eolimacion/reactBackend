@@ -65,7 +65,7 @@ const getWeightCategoryByGender = async (req, res, next) => {
 
         if (weightCatByGender.length > 0) {
 
-            weightCatByGender.sort((a, b)=> a.weight - b.weight)
+            weightCatByGender.sort((b, a)=> b.weight - a.weight)
             console.log(weightCatByGender)
 
 

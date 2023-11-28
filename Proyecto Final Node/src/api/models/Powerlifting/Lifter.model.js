@@ -23,7 +23,7 @@ const LifterSchema = new mongoose.Schema(
     total: { type: Number },
     GLPoints: { type: Number, required: false },
     weightCategory: [
-      { type: mongoose.Schema.Types.ObjectId, ref: 'weightCategory' },
+      { type: mongoose.Schema.Types.ObjectId, ref: 'WeightCategory' },
     ],
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
