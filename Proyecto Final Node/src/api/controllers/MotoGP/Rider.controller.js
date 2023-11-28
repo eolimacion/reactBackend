@@ -92,7 +92,7 @@ const getAll = async (req, res, next) => {
 const getByName = async (req, res, next) => {
     try {
       const { name } = req.params;
-      const riderByName = await Player.find({ name }).populate(
+      const riderByName = await Rider.find({ name }).populate(
         "likes selected",
       );
       if (riderByName.length > 0) {
