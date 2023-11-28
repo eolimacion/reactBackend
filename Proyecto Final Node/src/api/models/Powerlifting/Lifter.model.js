@@ -11,7 +11,7 @@ const LifterSchema = new mongoose.Schema(
     },
     age: { type: Number, required: false },
     gender: {
-      type: Number,
+      type: String,
       enum: genderEnum,
       unique: false,
       trim: true,
