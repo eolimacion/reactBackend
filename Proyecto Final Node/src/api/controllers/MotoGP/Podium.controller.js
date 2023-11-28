@@ -12,7 +12,7 @@ const create = async (req, res, next) => {
   try {
     await Podium.syncIndexes(); //? --------------------------- ACTUALIZAMOS INDEXES, que son aquellas claves del objeto que son únicas. Lo hacemos para asegurarnos que tenemos la última versión en caso de haber sido modificados los modelos
     const body = req.body;
-    const owner = req.user._id;podiumByName
+    const owner = req.user._id;
     const userElement = await User.findById(owner);
     if (userElement.yourPodium.length > 0) {
       //? ---------------- si el usuario ya tiene un podium mandar error
@@ -22,7 +22,7 @@ const create = async (req, res, next) => {
           `Este usuario ya tiene un podium, el id es: ${userElement.yourPodium} ❌ No puede crear otro`,
         );
     }
-    let myPodium = { name: req.body.name, owner: owner }; //? ----------------------------------------- aqui vamos a guardar los jugadores, si cumplen con la condición de las posición
+    let myPodium = { name: req.body.name, owner:owner }; //? ----------------------------------------- aqui vamos a guardar los jugadores, si cumplen con la condición de las posición
     let errors = []; //? --------------------------------------------- aquí vamos a guardar los errores indicando, en qué jugador falla, si no se cumple la condición de la posición
     let rider; //? -------------------------------------------------- variable que va cambiando en el recorrido en la que metemos los jugadores y los introducimos en el array myPodium
     for (let propiedad in body) {
@@ -31,16 +31,16 @@ const create = async (req, res, next) => {
       ) {
         case "firstPlace":
           rider = await Rider.findById(body[propiedad]);
-          
+          (myPodium[propiedad] =rider.id)
           break;
         case "secondPlace":
           rider = await Rider.findById(body[propiedad]);
-        
+          (myPodium[propiedad] =rider.id)
          
           break;
         case "thirdPlace":
           rider = await Rider.findById(body[propiedad]);
-         
+          (myPodium[propiedad] =rider.id)
           break;
         
         default:
@@ -71,7 +71,7 @@ const create = async (req, res, next) => {
         .json(
           savePodium
             ? await Podium.findById(savePodium._id).populate(
-                "comments,likes, circuit,thirdPlace,secondPlace,firstPlace, owner",
+                "comments likes circuit thirdPlace secondPlace firstPlace owner",
               )
             : "Error en el guardado del podium",
         );
@@ -92,7 +92,7 @@ const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const podiumById = await Podium.findById(id).populate(
-      "comments,likes, circuit,thirdPlace,secondPlace,firstPlace, owner",
+      "comments likes circuit thirdPlace secondPlace firstPlace owner",
     ); //? cogemos el elemento (podium) identificandola a través del id, que es único
     return res
       .status(podiumById ? 200 : 404)
@@ -115,7 +115,7 @@ const getById = async (req, res, next) => {
 const getAll = async (req, res, next) => {
   try {
     const allPodiums = await Podium.find().populate(
-      "comments,likes, circuit,thirdPlace,secondPlace,firstPlace, owner",
+      "comments likes circuit thirdPlace secondPlace firstPlace owner",
     ); //? ------------- el find() nos devuelve un array con todos los elementos de la colección del BackEnd, es decir, TODOS LOS 11 IDEALES
     console.log(allPodiums);
     return res
@@ -140,7 +140,7 @@ const getByName = async (req, res, next) => {
   try {
     const { name } = req.params;
     const podiumByName = await Podium.find({ name }).populate(
-      "comments,likes, circuit,thirdPlace,secondPlace,firstPlace, owner",
+      "comments likes circuit thirdPlace secondPlace firstPlace owner",
     );
     return res
       .status(podiumByName.length > 0 ? 200 : 404) //? igual que en get all, miramos si el array con ese nombre es mayor que 0 (solo debería de haber 1) y mostramos 200 o 404
@@ -301,7 +301,7 @@ const deletePodium = async (req, res, next) => {
 
             try {
               //? -------------------------------------- ELIMINAMOS LOS COMMENTS DEL Podium - repetimos lo que hacemos en el delteComment, porque lo estamos eliminando
-              const arrayComments = await Comment.find({ location: id });
+              const arrayComments = await Comment.find({ locationMoto: id });
               let errors = [];
               arrayComments.forEach(async (comment) => {
                 //? --------------------------- hacemos forEach para recorrer el array de comentarios que hemos encontrado en el podium a borrar

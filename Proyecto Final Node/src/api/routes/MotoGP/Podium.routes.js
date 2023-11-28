@@ -1,7 +1,7 @@
 
-const { isAuth, isOwner } = require("../../../middleware/auth.middleware");
 
 
+const { isAuth, isOwner, isOwnerPodium } = require("../../../middleware/auth.middleware");
 const { deletePodium, create,getById,
     getAll,
     getByName,
@@ -15,6 +15,6 @@ PodiumRoutes.get("/:id", getById);
 PodiumRoutes.get("/", getAll);
 PodiumRoutes.get("/byname/:name", getByName);
 PodiumRoutes.patch("/:id", [isOwner], update);
-PodiumRoutes.delete("/delete/:id", [isOwner], deletePodium);
+PodiumRoutes.delete("/delete/:id", [isOwnerPodium], deletePodium);
 
 module.exports = PodiumRoutes;

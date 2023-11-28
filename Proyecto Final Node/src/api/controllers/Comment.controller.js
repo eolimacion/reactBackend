@@ -190,7 +190,7 @@ const deleteComment = async (req, res, next) => {
               { $pull: { comments: id } }, //? ------------ ejecución
             );
             try {
-              //? ----------------------------------------- ELIMINAMOS AL FAVCOMMENT DEL PODIUM
+              //? ----------------------------------------- ELIMINAMOS AL FAVCOMMENT DEL Lifter
               await Lifter.updateMany(
                
                 { comments: id }, 
