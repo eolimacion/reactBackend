@@ -7,7 +7,6 @@ const {
   addAndRemoveCategoryById,
   updateLifter,
   deleteLifter,
-  lifterByCategory,
 } = require('../../controllers/Powerlifting/Lifter.controller');
 
 const { isAuthAdmin } = require('../../../middleware/auth.middleware');
@@ -18,7 +17,7 @@ LifterRoutes.get('/:id', getLifterById);
 LifterRoutes.get('/', getAllLifters);
 LifterRoutes.get('/sort/:name', getByLifterName);
 LifterRoutes.get('/getByGL', getLifterByGL);
-LifterRoutes.get('/getByCategory/:id', lifterByCategory);
+
 //!------------ como admin ------------
 
 LifterRoutes.post('/', [isAuthAdmin], createLifter);

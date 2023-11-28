@@ -6,6 +6,7 @@ const {
   toggleLifter,
   getWeightCategoryByGender,
   deleteWeightCategory,
+  liftersByCategory,
 } = require('../../controllers/Powerlifting/WeightCategory.controller');
 
 const { isAuthAdmin } = require('../../../middleware/auth.middleware');
@@ -22,5 +23,6 @@ WeightCategoryRoutes.post('/', [isAuthAdmin], createWeightCategory);
 WeightCategoryRoutes.patch('/update/:id', [isAuthAdmin], updateWeightCategory);
 WeightCategoryRoutes.patch('/addLifters/:id', [isAuthAdmin], toggleLifter);
 WeightCategoryRoutes.delete('/:id', [isAuthAdmin], deleteWeightCategory);
+WeightCategoryRoutes.get('/getLiftersInCategory/:id', liftersByCategory);
 
 module.exports = WeightCategoryRoutes;

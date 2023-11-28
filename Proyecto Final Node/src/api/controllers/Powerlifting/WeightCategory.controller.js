@@ -15,7 +15,7 @@ const { enumGenderOk, enumWeightCatOk } = require('../../../utils/enumOk');
 const setError = require('../../../helpers/handle-error');
 
 //?---------------------------------------------------------------------------------
-//! -------------------------------- GET BY ----------------------------------------
+//! -------------------------------- GET ------------------------------------------
 //?---------------------------------------------------------------------------------
 
 //* ---------------------- get by id ---------------------------
@@ -48,6 +48,25 @@ const getAllWeightCategories = async (req, res) => {
     }
   } catch (error) {
     return next(setError(500, error.message || 'Error to get'));
+  }
+};
+
+//?---------------------------------------------------------------------------------
+//! ------------------------- GET CATEGORY LIFTERS ------------------------------
+//?---------------------------------------------------------------------------------
+
+const liftersByCategory = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const liftersByCategory = await Lifter.find({
+      weightCategory: { $in: id },
+      /*  --EX  En este caso, $IN lo que hace es buscar que objetos
+          --EX cumplen con la categoria que tenemos. Es decir, 
+          --EX encuentra los lifters que IN weightCategory tengan category  */
+    });
+    return res.status(200).json(liftersByCategory);
+  } catch (error) {
+    return next(setError(500, error.message || 'Error getting'));
   }
 };
 
@@ -299,4 +318,5 @@ module.exports = {
   toggleLifter,
   getWeightCategoryByGender,
   deleteWeightCategory,
+  liftersByCategory,
 };
