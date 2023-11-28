@@ -145,10 +145,10 @@ const createWeightCategory = async (req, res, next) => {
     if (saveWeightCategory) {
       return res.status(200).json(newWeightCategory);
     } else {
-      return res.status(404).json('Couldnt create weight category');
+      return res.status(404).json('Not saved');
     }
   }else{
-    return res.status(404).json('Couldnt create weight category');
+    return res.status(404).json('enum NOT OK');
   }
   } catch (error) {
     return next(setError(500, error.message || 'Error to create'));

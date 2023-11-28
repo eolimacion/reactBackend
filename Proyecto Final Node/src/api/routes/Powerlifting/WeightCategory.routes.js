@@ -23,7 +23,7 @@ WeightCategoryRoutes.get('/getLifters/:id', lifterByCategory)
 
 //!------------ como admin ------------
 
-WeightCategoryRoutes.post('/' , createWeightCategory)
+WeightCategoryRoutes.post('/' , [isAuthAdmin], createWeightCategory)
 WeightCategoryRoutes.patch('/update/:id', [isAuthAdmin], updateWeightCategory)
 WeightCategoryRoutes.patch('/addLifters/:id', [isAuthAdmin], toggleLifter)
 WeightCategoryRoutes.delete('/', [isAuthAdmin], deleteWeightCategory)
