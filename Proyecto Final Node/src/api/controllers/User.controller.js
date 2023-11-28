@@ -1312,73 +1312,78 @@ const addFavRider = async (req, res, next) => {
     console.log("HE ENTRADO EN EL BACKEND")
     console.log(idRider)
     const elementRider = await Rider.findById(idRider);
-    const { _id, favRiders, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
+    if (elementRider) {
+      const { _id, favRiders, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
 
-    if (favRiders.includes(idRider)) {
-      //! ------------- PULL -----------------
-      try {
-        await User.findByIdAndUpdate(_id, {
-          //? actualizamos el usuario. 1r param => condición ()
-          $pull: { favRiders: idRider }, //? 2o param => ejecución (sacamos id del RIDER del user)
-        });
+      if (favRiders.includes(idRider)) {
+        //! ------------- PULL -----------------
         try {
-          await Rider.findByIdAndUpdate(idRider, {
-            //? aquí se actualiza el modelo de rider para sacar al user como like
-            $pull: { likes: _id },
+          await User.findByIdAndUpdate(_id, {
+            //? actualizamos el usuario. 1r param => condición ()
+            $pull: { favRiders: idRider }, //? 2o param => ejecución (sacamos id del RIDER del user)
           });
-
-          // todo --------- RESPONSE ------------- //
-
-          return res.status(200).json({
-            userUpdate: await User.findById(_id),
-            riderUpdate: await Rider.findById(idRider),
-            action: `Se ha quitado el RIDER ${elementRider.name} como favorito del usuario ${name}`,
-          });
+          try {
+            await Rider.findByIdAndUpdate(idRider, {
+              //? aquí se actualiza el modelo de rider para sacar al user como like
+              $pull: { likes: _id },
+            });
+  
+            // todo --------- RESPONSE ------------- //
+  
+            return res.status(200).json({
+              userUpdate: await User.findById(_id),
+              riderUpdate: await Rider.findById(idRider),
+              action: `Se ha quitado el RIDER ${elementRider.name} como favorito del usuario ${name}`,
+            });
+          } catch (error) {
+            return res.status(404).json({
+              error: "Error al quitar el User, del RIDER ❌",
+              message: error.message,
+            });
+          }
         } catch (error) {
           return res.status(404).json({
-            error: "Error al quitar el User, del RIDER ❌",
-            message: error.message,
+            message: "Error al quitar el RIDER, del User ❌",
+            error: error.message,
           });
         }
-      } catch (error) {
-        return res.status(404).json({
-          message: "Error al quitar el RIDER, del User ❌",
-          error: error.message,
-        });
+      } else {
+        //! ---------- PUSH ----------------
+        try {
+          await User.findByIdAndUpdate(_id, {
+            //? actualizamos el usuario. 1r param => condición ()
+            $push: { favRiders: idRider }, //? 2o param => ejecución (metemos id de RIDER en el user)
+          });
+          try {
+            await Rider.findByIdAndUpdate(idRider, {
+              //? aquí se actualiza el modelo de RIDER para meter al user como like
+              $push: { likes: _id },
+            });
+  
+            // todo --------- RESPONSE ------------- //
+  
+            return res.status(200).json({
+              userUpdate: await User.findById(_id),
+              riderUpdate: await Rider.findById(idRider),
+              action: `Se ha añadido el RIDER ${elementRider.name} como favorito del usuario ${name}`,
+            });
+          } catch (error) {
+            return res.status(404).json({
+              error: "Error al añadir el User, al RIDER ❌",
+              message: error.message,
+            });
+          }
+        } catch (error) {
+          return res.status(404).json({
+            message: "Error al añadir el RIDER, al User ❌",
+            error: error.message,
+          });
+        }
       }
     } else {
-      //! ---------- PUSH ----------------
-      try {
-        await User.findByIdAndUpdate(_id, {
-          //? actualizamos el usuario. 1r param => condición ()
-          $push: { favRiders: idRider }, //? 2o param => ejecución (metemos id de RIDER en el user)
-        });
-        try {
-          await Rider.findByIdAndUpdate(idRider, {
-            //? aquí se actualiza el modelo de RIDER para meter al user como like
-            $push: { likes: _id },
-          });
-
-          // todo --------- RESPONSE ------------- //
-
-          return res.status(200).json({
-            userUpdate: await User.findById(_id),
-            riderUpdate: await Rider.findById(idRider),
-            action: `Se ha añadido el RIDER ${elementRider.name} como favorito del usuario ${name}`,
-          });
-        } catch (error) {
-          return res.status(404).json({
-            error: "Error al añadir el User, al RIDER ❌",
-            message: error.message,
-          });
-        }
-      } catch (error) {
-        return res.status(404).json({
-          message: "Error al añadir el RIDER, al User ❌",
-          error: error.message,
-        });
-      }
+      return res.status(404).json("no se han encontrado riders con el id indicado ❌")
     }
+
   } catch (error) {
     return next(
       setError(
@@ -1397,7 +1402,8 @@ const addFavCircuit = async (req, res, next) => {
     console.log("HE ENTRADO EN EL BACKEND")
     console.log(idCircuit)
     const elementCircuit = await Circuit.findById(idCircuit);
-    const { _id, favCircuits, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
+    if (elementCircuit) {
+      const { _id, favCircuits, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
 
     if (favCircuits.includes(idCircuit)) {
       //! ------------- PULL -----------------
@@ -1464,6 +1470,9 @@ const addFavCircuit = async (req, res, next) => {
         });
       }
     }
+    } else {
+      return res.status(404).json("no se han encontrado circuits con el id indicado ❌")
+    }
   } catch (error) {
     return next(
       setError(
@@ -1482,7 +1491,8 @@ const addFavPodium = async (req, res, next) => {
     console.log("HE ENTRADO EN EL BACKEND")
     console.log(idPodium)
     const elementPodium = await Podium.findById(idPodium);
-    const { _id, favPodiums, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
+    if (elementPodium) {
+      const { _id, favPodiums, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
 
     if (favPodiums.includes(idPodium)) {
       //! ------------- PULL -----------------
@@ -1549,6 +1559,10 @@ const addFavPodium = async (req, res, next) => {
         });
       }
     }
+    } else {
+      return res.status(404).json("no se han encontrado podiums con el id indicado ❌")
+    }
+    
   } catch (error) {
     return next(
       setError(
@@ -1567,7 +1581,9 @@ const addFavLifter = async (req, res, next) => {
     console.log("HE ENTRADO EN EL BACKEND")
     console.log(idLifter)
     const elementLifter = await Lifter.findById(idLifter);
-    const { _id, favLifters, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
+
+    if (elementLifter) {
+      const { _id, favLifters, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
 
     if (favLifters.includes(idLifter)) {
       //! ------------- PULL -----------------
@@ -1634,6 +1650,10 @@ const addFavLifter = async (req, res, next) => {
         });
       }
     }
+    } else {
+      return res.status(404).json("no se han encontrado lifter con el id indicado ❌")
+    }
+    
   } catch (error) {
     return next(
       setError(
@@ -1652,7 +1672,9 @@ const addFavWeightCategory = async (req, res, next) => {
     console.log("HE ENTRADO EN EL BACKEND")
     console.log(idWeightCategory)
     const elementWeightCategory = await WeightCategory.findById(idWeightCategory);
-    const { _id, favWeightCategory, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
+
+    if (elementWeightCategory) {
+      const { _id, favWeightCategory, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
 
     if (favWeightCategory.includes(idWeightCategory)) {
       //! ------------- PULL -----------------
@@ -1719,6 +1741,10 @@ const addFavWeightCategory = async (req, res, next) => {
         });
       }
     }
+    } else {
+      return res.status(404).json("no se han encontrado weight category con el id indicado ❌")
+    }
+    
   } catch (error) {
     return next(
       setError(
