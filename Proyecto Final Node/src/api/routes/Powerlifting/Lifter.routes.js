@@ -22,7 +22,7 @@ LifterRoutes.get('/getByGL', getLifterByGL);
 
 LifterRoutes.post('/', [isAuthAdmin], createLifter);
 LifterRoutes.delete('/:id', [isAuthAdmin], deleteLifter);
-LifterRoutes.patch('/update', [isAuthAdmin], updateLifter);
+LifterRoutes.patch('/update/:id', [isAuthAdmin], updateLifter);
 LifterRoutes.patch(
   '/addWeightCategory/:id',
   [isAuthAdmin],
