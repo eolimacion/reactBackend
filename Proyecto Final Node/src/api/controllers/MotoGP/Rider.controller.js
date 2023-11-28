@@ -123,7 +123,7 @@ const update = async (req, res) => {
             const oldImg = riderById.image;
 
             const customBody = {
-                _id: playerById._id, //? ---------- ponemos _.id porque así lo pone en insomnia
+                _id: riderById._id, //? ---------- ponemos _.id porque así lo pone en insomnia
                 image: req.file?.path ? catchImg : oldImg, //? -------------- si en el param hay una nueva imagen la ponemos en el lugar de la que había, si no hay una nueva, se deja la que había
                 name: req.body?.name ? req.body.name : riderById.name,
                 number: req.body?.number ? req.body.number : riderById.number,
@@ -186,7 +186,7 @@ const update = async (req, res) => {
                 return res.status(200).json({
                     dataTest: test,
                     update: true,
-                    updatedPlayer: playerByIdUpdated,
+                    updatedRider: riderByIdUpdated,
                 });
                 }
             } catch (error) {
