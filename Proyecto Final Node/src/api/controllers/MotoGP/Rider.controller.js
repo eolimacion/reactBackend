@@ -137,7 +137,7 @@ const update = async (req, res) => {
                 championshipsCarrer: req.body?.championshipsCarrer ? req.body?.championshipsCarrer : riderById.championshipsCarrer,
                 team: req.body?.team ? req.body?.team : riderById.team,
                 polesSeason: req.body?.polesSeason ? req.body?.polesSeason : riderById.polesSeason,
-                circuits: req.body?.circuits ? req.body?.circuits : riderById.circuits,
+                circuits: riderById.circuits,
                 likes: riderById.likes,
                 selected: riderById.selected,
             }
