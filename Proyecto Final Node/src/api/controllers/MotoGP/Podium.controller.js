@@ -31,7 +31,7 @@ const create = async (req, res, next) => {
       ) {
         case "firstPlace":
           rider = await Rider.findById(body[propiedad]);
-          (myPodium[propiedad] =rider.id)
+          (myPodium[propiedad] =rider._id)
           break;
         case "secondPlace":
           rider = await Rider.findById(body[propiedad]);
@@ -57,7 +57,7 @@ const create = async (req, res, next) => {
           //? --------------------------------- lo hacemos porque name también viene como propiedad en el body pero no es un jugador que cambiar el modelo
           rider = await Rider.findById(body[posicion]);
           await Rider.findByIdAndUpdate(
-            rider.id, //? ------------- 1r param: el id del elemento que vamos a modificar (añadirle a la propiedad selected)
+            rider._id, //? ------------- 1r param: el id del elemento que vamos a modificar (añadirle a la propiedad selected)
             { $push: { selected: savePodium._id } }, //? ------------------- 2o param: le metemos el id del podium que estamos creando a la propiedad selected del rider que hemos puesto en el body
           );
         }

@@ -12,7 +12,6 @@ const {
   filterGeneralNum,
   filterAndSort,
   averageStats,
-  toggleRider,
 } = require('../../controllers/MotoGP/Circuit.controller');
 
 const CircuitRoutes = require('express').Router();
@@ -28,6 +27,5 @@ CircuitRoutes.get('/sortascending/circuits/:stat', sortCircuitsbyAscending);
 CircuitRoutes.get('/filter/circuits/:filter/:gt/:lt', filterGeneralNum);
 CircuitRoutes.get('/filtersort/circuits/:filter/:gt/:lt', filterAndSort);
 CircuitRoutes.get('/average/:stat/', averageStats);
-CircuitRoutes.patch('/add/:id', toggleRider);
 
 module.exports = CircuitRoutes;

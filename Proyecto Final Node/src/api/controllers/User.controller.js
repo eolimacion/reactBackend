@@ -814,9 +814,8 @@ const deleteUser = async (req, res, next) => {
                           );
             
                             try {
-                              const userForYourTeam = await User.findById(id)
-                              const yourTeamId = userForYourTeam.yourteam[0]
-                              if (userForYourTeam.length > 0) {
+                              const yourTeamId = user.yourteam[0]
+                              if (user.yourteam.length > 0) {
                                 return res.redirect(
                                   307,
                                   `http://localhost:8081/api/v1/eleven/delete/${yourTeamId}`, //? redirigimos al delete eleven porque si tiene un equipo a su nombre, ese tmb se borra
@@ -825,13 +824,18 @@ const deleteUser = async (req, res, next) => {
 
                               try {
                                 const allUserComments = await Comment.find({creator: id}) //? pilla los comments que haya creado el usuario q estamos borrando
-                                if (allUserComments.length > 0) {
-                                  for (let comment of allUserComments) {
-                                    return res.redirect(
-                                      307,
-                                      `http://localhost:8081/api/v1/comment/delete/${comment._id}`, //? redirigimos al delete comment porque si ha creado comments, tmb se borran. por cada comment que encuentre, se repite el redirect para borrarlos a todos
-                                    )
+                                console.log("he entrado en el try de comments !!!!!!!!!!!!!!!!!!!!!!", allUserComments)
+                                if (allUserComments) {
+                                  if (allUserComments.length > 0) {
+                                    for (let comment of allUserComments) {
+                                      return res.redirect(
+                                        307,
+                                        `http://localhost:8081/api/v1/comment/delete/${comment._id}`, //? redirigimos al delete comment porque si ha creado comments, tmb se borran. por cada comment que encuentre, se repite el redirect para borrarlos a todos
+                                      )
+                                    }
                                   }
+                                } else {
+                                  console.log("no tengo comments")
                                 }
   
                               } catch (error) {
@@ -1674,14 +1678,14 @@ const addFavWeightCategory = async (req, res, next) => {
     const elementWeightCategory = await WeightCategory.findById(idWeightCategory);
 
     if (elementWeightCategory) {
-      const { _id, favWeightCategory, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
+      const { _id, favWeightCategories, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
 
-    if (favWeightCategory.includes(idWeightCategory)) {
+    if (favWeightCategories.includes(idWeightCategory)) {
       //! ------------- PULL -----------------
       try {
         await User.findByIdAndUpdate(_id, {
           //? actualizamos el usuario. 1r param => condición ()
-          $pull: { favWeightCategory: idWeightCategory }, //? 2o param => ejecución (sacamos id del WEIGHT CATEGORY del user)
+          $pull: { favWeightCategories: idWeightCategory }, //? 2o param => ejecución (sacamos id del WEIGHT CATEGORY del user)
         });
         try {
           await WeightCategory.findByIdAndUpdate(idWeightCategory, {
@@ -1713,7 +1717,7 @@ const addFavWeightCategory = async (req, res, next) => {
       try {
         await User.findByIdAndUpdate(_id, {
           //? actualizamos el usuario. 1r param => condición ()
-          $push: { favWeightCategory: idWeightCategory }, //? 2o param => ejecución (metemos id de WEIGHT CATEGORY en el user)
+          $push: { favWeightCategories: idWeightCategory }, //? 2o param => ejecución (metemos id de WEIGHT CATEGORY en el user)
         });
         try {
           await WeightCategory.findByIdAndUpdate(idWeightCategory, {
