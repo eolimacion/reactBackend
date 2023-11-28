@@ -1,3 +1,5 @@
+const interestedInEnum = require("../data/interestedInEnum");
+
 //! --------------- ENUM GENDER ------------------
 const enumGenderOk = (gender) => {
   const enumGender = ["hombre", "mujer", "otros"];
@@ -6,10 +8,11 @@ const enumGenderOk = (gender) => {
     return { check: true, gender };
   } else {
     return {
-      chceck: false,
+      check: false,
     };
   }
 };
+//FIX Estaba puesto como chcek
 
 //! --------------- ENUM POSITION ------------------
 const enumPositionOk = (position) => {
@@ -70,6 +73,17 @@ const enumWeightCatOk = (weight) => {
   }
 };
 
+const enumInterestOk = (interest) => {
+  if (interestedInEnum.includes(interest)) {
+    console.log("entro en el true");
+    return { check: true, interest };
+  } else {
+    return {
+      check: false,
+    };
+  }
+};
+
 
 module.exports = {
   enumGenderOk,
@@ -77,4 +91,5 @@ module.exports = {
   enumPreferredFootOk,
   enumLeagueOk,
   enumWeightCatOk,
+  enumInterestOk,
 };

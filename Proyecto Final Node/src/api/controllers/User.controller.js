@@ -1,36 +1,35 @@
 //! -------- MIDDLEWARE ----------
-const { deleteImgCloudinary } = require("../../middleware/files.middleware");
+const { deleteImgCloudinary } = require('../../middleware/files.middleware');
 
 //! -------- UTILS -----------
-const { generateToken } = require("../../utils/token");
-const sendEmail = require("../../utils/sendEmail");
-const randomCode = require("../../utils/randomCode");
-const randomPassword = require("../../utils/randomPassword");
-const { enumGenderOk } = require("../../utils/enumOk");
+const { generateToken } = require('../../utils/token');
+const sendEmail = require('../../utils/sendEmail');
+const randomCode = require('../../utils/randomCode');
+const randomPassword = require('../../utils/randomPassword');
+const { enumGenderOk, enumInterestOk } = require('../../utils/enumOk');
 
 //! -------- ESTADOS ----------
-const { getSendEmail, setSendEmail } = require("../../state/state.data");
+const { getSendEmail, setSendEmail } = require('../../state/state.data');
 
 //! -------- LIBRERIAS ----------
-const nodemailer = require("nodemailer");
-const bcrypt = require("bcrypt");
-const validator = require("validator");
+const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
+const validator = require('validator');
 
 //! --------- HELPERS --------
-const setError = require("../../helpers/handle-error");
+const setError = require('../../helpers/handle-error');
 
 //! --------- MODELOS --------
-const Player = require("../models/Player.model");
-const Team = require("../models/Team.model");
-const User = require("../models/User.model");
-const Eleven = require("../models/Eleven.model");
-const Comment = require("../models/Comment.model");
-const Rider = require("../models/MotoGP/Rider.model")
-const Circuit = require("../models/MotoGP/Circuit.model")
-const Podium = require("../models/MotoGP/Podium.model");
-const Lifter = require("../models/Powerlifting/Lifter.model");
-const WeightCategory = require("../models/Powerlifting/WeightCategory.model");
-
+const Player = require('../models/Player.model');
+const Team = require('../models/Team.model');
+const User = require('../models/User.model');
+const Eleven = require('../models/Eleven.model');
+const Comment = require('../models/Comment.model');
+const Rider = require('../models/MotoGP/Rider.model');
+const Circuit = require('../models/MotoGP/Circuit.model');
+const Podium = require('../models/MotoGP/Podium.model');
+const Lifter = require('../models/Powerlifting/Lifter.model');
+const WeightCategory = require('../models/Powerlifting/WeightCategory.model');
 
 //todo -------------------------------------------------------------------------------------------------------
 
@@ -41,19 +40,20 @@ const registerLargo = async (req, res, next) => {
     await User.syncIndexes();
     let confirmationCode = randomCode(); //? generamos el código de confirmación
     const { name, email } = req.body;
-    console.log(confirmationCode + " --> CONFRIMATION CODE");
+    console.log(confirmationCode + ' --> CONFRIMATION CODE');
 
     const userExist = await User.findOne(
       //? estamos buscando si ya hay un usuario con este email o con este nombre para que si ya existe yo no pueda registrarlo. el findOne te encuentra un solo elemento, el find te da un array con todas las coincidencias con la condición que tu le des
       { email: req.body.email }, //? las condiciones que tiene que cumplir el supuesto usuario si ya existe. que el email sea el que hemos puesto en el body
-      { name: req.body.name }, //? tambien que el name sea el mismo, tiene que cumplir las dos
+      { name: req.body.name } //? tambien que el name sea el mismo, tiene que cumplir las dos
     );
     if (!userExist) {
       //? si el usuario no existe:
       const newUser = new User({ ...req.body, confirmationCode }); //? ---- creamos una copia con la info que nos mandan y con el confirmation code que nos da el model de user
       req.file //? ------------------------------------------------------- si hay imagen, pues la actualizamos por la que dan, si no, la default será el url
         ? (newUser.image = req.file.path)
-        : (newUser.image = "https://res-console.cloudinary.com/dx2arqne6/media_explorer_thumbnails/df958de5eb6e17c7b5218b715563d36c/detailed");
+        : (newUser.image =
+            'https://res-console.cloudinary.com/dx2arqne6/media_explorer_thumbnails/df958de5eb6e17c7b5218b715563d36c/detailed');
 
       try {
         //? -------------- como vamos a poner otro await, hay que poner otro try catch para que se pillen bien los errores. por cada asincronía, tiene que haber un trycatch
@@ -66,7 +66,7 @@ const registerLargo = async (req, res, next) => {
 
           const transporter = nodemailer.createTransport({
             //? esto es un metodo que hace el envío del email. la estructura nos la da nodemailer, no la he ideado yo
-            service: "gmail",
+            service: 'gmail',
             auth: {
               user: emailEnv,
               pass: password, //? para poder usar este metodo de nodemailer e identificarme como el que lleva el servidor, no tiene que ver con nada del cliente, es verificacion de la aplicación y yo como programador
@@ -77,7 +77,7 @@ const registerLargo = async (req, res, next) => {
             //? igual que el transporter, no lo escribo yo
             from: emailEnv, //? lo envío yo con el email que he puesto en el env
             to: email, //? esto es el destinatario, que sí que se saca del body del register, es decir, se lo enviamos al correo que nos ha dado el ususario al registrarse
-            subject: "Confirmation Code",
+            subject: 'Confirmation Code',
             text: `tu código es ${confirmationCode}, gracias por confiar en nosotros ${name}`, //? el confirmation code viene del modelo de user y el name del destructuring de la linea 9
           };
 
@@ -88,10 +88,10 @@ const registerLargo = async (req, res, next) => {
               console.log(error);
               return res.status(404).json({
                 user: savedUser,
-                confirmationCode: "error, resend Code",
+                confirmationCode: 'error, resend Code',
               }); //? si ha habido un error le decimos que lo vuelva a enviar
             } else {
-              console.log("Email sent: " + info.response); //? ------------------- la info nos da la respuesta del envío, si se ha hecho bien
+              console.log('Email sent: ' + info.response); //? ------------------- la info nos da la respuesta del envío, si se ha hecho bien
               return res
                 .status(200)
                 .json({ user: savedUser, confirmationCode }); //? en este caso le decimos que se ha guardado el usuario y que el confirmationcode se ha enviado correctamente
@@ -104,14 +104,14 @@ const registerLargo = async (req, res, next) => {
           setError(
             500,
             error.message ||
-              "Error al guardar la info del register del nuevo usuario ❌",
-          ),
+              'Error al guardar la info del register del nuevo usuario ❌'
+          )
         );
       }
     } else {
       //? si el usuario ya existe:
       if (req.file) deleteImgCloudinary(catchImg); //? como ha habido un error (intento de register ya estando register) si se ha subido una imagen hay que borrarla para que no quede basura en el backend sin usar
-      return res.status(409).json("this user already exists!");
+      return res.status(409).json('this user already exists!');
     }
   } catch (error) {
     req.file && deleteImgCloudinary(catchImg); //? como ha habido un error (intento de register ya estando register) si se ha subido una imagen hay que borrarla para que no quede basura en el backend sin usar
@@ -119,8 +119,8 @@ const registerLargo = async (req, res, next) => {
       setError(
         500,
         error.message ||
-          "Error general en el register de nuevo usuario - Largo ❌",
-      ),
+          'Error general en el register de nuevo usuario - Largo ❌'
+      )
     );
   }
 };
@@ -132,7 +132,7 @@ const registerEstado = async (req, res, next) => {
     await User.syncIndexes(); //? sabemos si ha cambiado algo del modelo
     let confirmationCode = randomCode(); //? generamos el código de confirmación
     const { name, email } = req.body;
-    console.log(confirmationCode + " --> CONFRIMATION CODE");
+    console.log(confirmationCode + ' --> CONFRIMATION CODE');
 
     const userExist = await User.findOne(
       //? estamos buscando si ya hay un usuario con este email o con este nombre para que si ya existe yo no pueda registrarlo. el findOne te encuentra un solo elemento, el find te da un array con todas las coincidencias con la condición que tu le des
@@ -143,7 +143,8 @@ const registerEstado = async (req, res, next) => {
       const newUser = new User({ ...req.body, confirmationCode }); //? ---- creamos una copia con la info que nos mandan y con el confirmation code que nos da el model de user
       req.file //? ------------------------------------------------------- si hay imagen, pues la actualizamos por la que dan, si no, la default será el url
         ? (newUser.image = req.file.path)
-        : (newUser.image = "https://res-console.cloudinary.com/dx2arqne6/media_explorer_thumbnails/df958de5eb6e17c7b5218b715563d36c/detailed");
+        : (newUser.image =
+            'https://res-console.cloudinary.com/dx2arqne6/media_explorer_thumbnails/df958de5eb6e17c7b5218b715563d36c/detailed');
 
       try {
         const savedUser = await newUser.save(); //? --------------------- guardamos el user con la info ya metida (6 lineas antes)
@@ -162,7 +163,7 @@ const registerEstado = async (req, res, next) => {
               return res.status(404).json({
                 user: savedUser,
                 confirmationCode:
-                  "error al enviar el correo de confirmación ❌📩, resend Code",
+                  'error al enviar el correo de confirmación ❌📩, resend Code',
               });
             }
           }, 1400); //? ----------- el timeout es de 1,4 segundos
@@ -170,12 +171,12 @@ const registerEstado = async (req, res, next) => {
       } catch (error) {
         req.file && deleteImgCloudinary(catchImg);
         return next(
-          setError(500, error.message || "Error al guardar nuevo usuario ❌"),
+          setError(500, error.message || 'Error al guardar nuevo usuario ❌')
         );
       }
     } else {
       if (req.file) deleteImgCloudinary(catchImg); //? como ha habido un error (intento de register ya estando register) si se ha subido una imagen hay que borrarla para que no quede basura en el backend sin usar
-      return res.status(409).json("this user already exists!");
+      return res.status(409).json('this user already exists!');
     }
   } catch (error) {
     req.file && deleteImgCloudinary(catchImg); //? como ha habido un error (intento de register ya estando register) si se ha subido una imagen hay que borrarla para que no quede basura en el backend sin usar
@@ -183,8 +184,8 @@ const registerEstado = async (req, res, next) => {
       setError(
         500,
         error.message ||
-          "Error general en el register de nuevo usuario - Estado ❌",
-      ),
+          'Error general en el register de nuevo usuario - Estado ❌'
+      )
     );
   }
 };
@@ -195,36 +196,37 @@ const registerWithRedirect = async (req, res, next) => {
   try {
     await User.syncIndexes(); //? sabemos si ha cambiado algo del modelo
     let confirmationCode = randomCode(); //? generamos el código de confirmación
-    console.log(confirmationCode + " --> CONFRIMATION CODE");
+    console.log(confirmationCode + ' --> CONFRIMATION CODE');
 
     const userExist = await User.findOne(
       //? estamos buscando si ya hay un usuario con este email o con este nombre para que si ya existe yo no pueda registrarlo. el findOne te encuentra un solo elemento, el find te da un array con todas las coincidencias con la condición que tu le des
       { email: req.body.email }, //? las condiciones que tiene que cumplir el supuesto usuario si ya existe
-      { name: req.body.name },
+      { name: req.body.name }
     );
     if (!userExist) {
       const newUser = new User({ ...req.body, confirmationCode }); //? ---- creamos una copia con la info que nos mandan y con el confirmation code que nos da el model de user
       req.file //? ------------------------------------------------------- si hay imagen, pues la actualizamos por la que dan, si no, la default será el url
         ? (newUser.image = req.file.path)
-        : (newUser.image = "https://res-console.cloudinary.com/dx2arqne6/media_explorer_thumbnails/df958de5eb6e17c7b5218b715563d36c/detailed");
+        : (newUser.image =
+            'https://res-console.cloudinary.com/dx2arqne6/media_explorer_thumbnails/df958de5eb6e17c7b5218b715563d36c/detailed');
 
       try {
         const savedUser = await newUser.save(); //? --------------------- guardamos el user con la info ya metida (6 lineas antes)
         if (savedUser) {
           return res.redirect(
             307,
-            `http://localhost:8081/api/v1/users/register/sendMail/${savedUser._id}`,
+            `http://localhost:8081/api/v1/users/register/sendMail/${savedUser._id}`
           ); //? lo que estamos diciendo es que rediriga a esta página que te manda un mail, es una pagina que tiene de endpoint el id del usuario en el que hemos metido la info del register
         }
       } catch (error) {
         req.file && deleteImgCloudinary(catchImg);
         return next(
-          setError(500, error.message || "Error al guardar nuevo usuario ❌"),
+          setError(500, error.message || 'Error al guardar nuevo usuario ❌')
         );
       }
     } else {
       if (req.file) deleteImgCloudinary(catchImg); //? como ha habido un error (intento de register ya estando register) si se ha subido una imagen hay que borrarla para que no quede basura en el backend sin usar
-      return res.status(409).json("this user already exists!");
+      return res.status(409).json('this user already exists!');
     }
   } catch (error) {
     req.file && deleteImgCloudinary(catchImg); //? como ha habido un error (intento de register ya estando register) si se ha subido una imagen hay que borrarla para que no quede basura en el backend sin usar
@@ -232,15 +234,15 @@ const registerWithRedirect = async (req, res, next) => {
       setError(
         500,
         error.message ||
-          "Error general en el register de nuevo usuario - Redirect ❌",
-      ),
+          'Error general en el register de nuevo usuario - Redirect ❌'
+      )
     );
   }
 };
 
 //! ------------------------- SEND CODE -------------------------------------------
 const sendCode = async (req, res, next) => {
-  console.log("yepaa voy!");
+  console.log('yepaa voy!');
   try {
     const { id } = req.params; //? buscamos al user por id en el url porque cuando hacemos el redirect, en el url ya sale el id del usuario
     const userDB = await User.findById(id); //? aqui encontramos al user a través del id de la linea anterior y lo guardamos en variable para poder utilizarlo
@@ -251,7 +253,7 @@ const sendCode = async (req, res, next) => {
 
     const transporter = nodemailer.createTransport({
       //? creamos el transporter: se encarga de hacer el envío del correo, es como el cartero que reparte las cartas
-      service: "gmail",
+      service: 'gmail',
       auth: {
         user: email,
         pass: password,
@@ -262,7 +264,7 @@ const sendCode = async (req, res, next) => {
       //? -------------------------- seteamos las opciones del email que se envía
       from: email,
       to: userDB.email, //! aquí se envía al correo del usuario que se ha registrdo en el register con redirect, podemos acceder porque hemos guardado ese user en la 3a linea de la funcion
-      subject: "Confirmation code",
+      subject: 'Confirmation code',
       text: `tu codigo es ${userDB.confirmationCode}, gracias por confiar en nosotros ${userDB.name}`,
     };
 
@@ -272,10 +274,10 @@ const sendCode = async (req, res, next) => {
         console.log(error);
         return res.status(404).json({
           user: userDB,
-          confirmationCode: "error al enviar el codigo ❌, reenviar código",
+          confirmationCode: 'error al enviar el codigo ❌, reenviar código',
         }); //? no se ha podido enviar el codigo y lo mostramos
       } else {
-        console.log("Email send: " + info.response);
+        console.log('Email send: ' + info.response);
         return res
           .status(200)
           .json({ user: userDB, confirmationCode: userDB.confirmationCode }); //? si se ha podido enviar y mostramos el exito y el código por aquí
@@ -283,7 +285,7 @@ const sendCode = async (req, res, next) => {
     });
   } catch (error) {
     return next(
-      setError(500, error.message || "Error general en el SendCode ❌"),
+      setError(500, error.message || 'Error general en el SendCode ❌')
     );
   }
 };
@@ -296,10 +298,10 @@ const getById = async (req, res, next) => {
     return res
       .status(userById ? 200 : 404)
       .json(
-        userById ? userById : "no se ha encontrado un usuario con ese id ❌",
+        userById ? userById : 'no se ha encontrado un usuario con ese id ❌'
       );
   } catch (error) {
-    return next(setError(500, error.message || "Error al GET by ID ❌"));
+    return next(setError(500, error.message || 'Error al GET by ID ❌'));
   }
 };
 
@@ -313,11 +315,11 @@ const getAll = async (req, res, next) => {
         allUsers.length > 0
           ? allUsers
           : {
-              message: "No se han encontrado usuarios en la DB ❌",
-            },
+              message: 'No se han encontrado usuarios en la DB ❌',
+            }
       );
   } catch (error) {
-    return next(setError(500, error.message || "Error al GET ALL ❌"));
+    return next(setError(500, error.message || 'Error al GET ALL ❌'));
   }
 };
 
@@ -331,10 +333,10 @@ const getByName = async (req, res, next) => {
       .json(
         userByName.length > 0
           ? userByName
-          : "no se ha encontrado ningún usuario con ese nombre ❌",
+          : 'no se ha encontrado ningún usuario con ese nombre ❌'
       );
   } catch (error) {
-    return next(setError(500, error.message || "Error al GET by NAME ❌"));
+    return next(setError(500, error.message || 'Error al GET by NAME ❌'));
   }
 };
 
@@ -351,13 +353,13 @@ const login = async (req, res, next) => {
       } else {
         return res
           .status(404)
-          .json("password is incorrect (does not match) ❌");
+          .json('password is incorrect (does not match) ❌');
       }
     } else {
-      return res.status(404).json("User not found/is not registered 🔎❌");
+      return res.status(404).json('User not found/is not registered 🔎❌');
     }
   } catch (error) {
-    return next(setError(500, error.message || "Error en el login ❌"));
+    return next(setError(500, error.message || 'Error en el login ❌'));
   }
 };
 
@@ -375,13 +377,13 @@ const autologin = async (req, res, next) => {
       } else {
         return res
           .status(404)
-          .json("password is incorrect (does not match) ❌");
+          .json('password is incorrect (does not match) ❌');
       }
     } else {
-      return res.status(404).json("User not found/is not registered 🔎❌");
+      return res.status(404).json('User not found/is not registered 🔎❌');
     }
   } catch (error) {
-    return next(setError(500, error.message || "Error en el autologin ❌"));
+    return next(setError(500, error.message || 'Error en el autologin ❌'));
   }
 };
 
@@ -392,7 +394,7 @@ const resendCode = async (req, res, next) => {
     const password = process.env.PASSWORD;
     const transporter = nodemailer.createTransport({
       //? creamos el transporter: se encarga de hacer el envío del correo, es como el cartero que reparte las cartas
-      service: "gmail",
+      service: 'gmail',
       auth: {
         user: email,
         pass: password,
@@ -405,7 +407,7 @@ const resendCode = async (req, res, next) => {
         //? ------------------------------ seteamos las opciones del email que se envía
         from: email,
         to: req.body.email,
-        subject: " Resent Confirmation code",
+        subject: ' Resent Confirmation code',
         text: `tu codigo es ${userExist.confirmationCode}, gracias por confiar en nosotros ${userExist.name}`,
       };
 
@@ -415,7 +417,7 @@ const resendCode = async (req, res, next) => {
           console.log(error);
           return res.status(404).json({ resend: false }); //? no se ha podido reenviar el codigo por lo tanto la propiedad resend es false
         } else {
-          console.log("Email send: " + info.response);
+          console.log('Email send: ' + info.response);
           return res.status(200).json({
             resend: true,
             confirmationCode: `${userExist.confirmationCode}`,
@@ -423,14 +425,14 @@ const resendCode = async (req, res, next) => {
         }
       });
     } else {
-      return res.status(404).json("User not found/is not registered");
+      return res.status(404).json('User not found/is not registered');
     }
   } catch (error) {
     return next(
       setError(
         500,
-        error.message || "Error general en el reenvío del código ❌",
-      ),
+        error.message || 'Error general en el reenvío del código ❌'
+      )
     ); //? llamamos a la función que crea el error con el mensaje que yo le diga
   }
 };
@@ -442,7 +444,7 @@ const checkNewUser = async (req, res, next) => {
     const { email, confirmationCode } = req.body; //? en el body nos viene el email y el codigo de confirmación
     const userExist = await User.findOne({ email }); //? encontramos al user con el email
     if (userExist) {
-      console.log("holaaaaa" + userExist.confirmationCode)
+      console.log('holaaaaa' + userExist.confirmationCode);
       if (userExist.confirmationCode === confirmationCode) {
         //? si el confirmation code del back coindice con el que recibimos en el body
         try {
@@ -453,7 +455,7 @@ const checkNewUser = async (req, res, next) => {
             .json({ testCheckUser: updateUser.check == true ? true : false }); //? si el check esta en true es que ha ido bien, si esta en false es que algo ha fallado
         } catch (error) {
           return res.status(404).json({
-            message: "error al comprobar el check user ❌",
+            message: 'error al comprobar el check user ❌',
             error: error.message,
           }); //? mira si se ha actualizado el usuario corectamente
         }
@@ -465,19 +467,19 @@ const checkNewUser = async (req, res, next) => {
           userExist,
           check: false,
           delete: (await User.findById(userExist._id))
-            ? "El usuario no se ha podido borrar"
-            : "El usuario se ha borrado correctamente", //? miramos si el user antiguo existe y mostramos el exito/fracaso del borrado
+            ? 'El usuario no se ha podido borrar'
+            : 'El usuario se ha borrado correctamente', //? miramos si el user antiguo existe y mostramos el exito/fracaso del borrado
         });
       }
     } else {
-      return res.status(404).json("User not found/is not registered 🔎❌");
+      return res.status(404).json('User not found/is not registered 🔎❌');
     }
   } catch (error) {
     return next(
       setError(
         500,
-        error.message || "Error general en el checkeo de user con código ❌",
-      ),
+        error.message || 'Error general en el checkeo de user con código ❌'
+      )
     );
   }
 };
@@ -491,13 +493,13 @@ const changePassword = async (req, res, next) => {
       //? si encontramos el usuario en el backend:
       return res.redirect(
         307,
-        `http://localhost:8081/api/v1/users/sendPassword/${userDB._id}`,
+        `http://localhost:8081/api/v1/users/sendPassword/${userDB._id}`
       ); //? llamamos a un redirect que genera contraseña nueva (lo hace: utils/randomPassword) y la envía
     } else {
-      return res.status(404).json("User not found/is not registered 🔎❌");
+      return res.status(404).json('User not found/is not registered 🔎❌');
     }
   } catch (error) {
-    return next(setError(500 || "Error general al cambiar la contraseña ❌"));
+    return next(setError(500 || 'Error general al cambiar la contraseña ❌'));
   }
 };
 
@@ -513,7 +515,7 @@ const sendPassword = async (req, res, next) => {
 
     const transporter = nodemailer.createTransport({
       //? creamos el transporter: se encarga de hacer el envío del correo, es como el cartero que reparte las cartas
-      service: "gmail",
+      service: 'gmail',
       auth: {
         user: email,
         pass: password,
@@ -523,7 +525,7 @@ const sendPassword = async (req, res, next) => {
       //? ------------------------------ seteamos las opciones del email que se envía
       from: email,
       to: userDB.email,
-      subject: "Your New Password",
+      subject: 'Your New Password',
       text: `${userDB.name}, your new password is ${passwordSecure}. If you have not solicited a password change, please get in contact with our team.`,
     };
     transporter.sendMail(mailOptions, async function (error, info) {
@@ -532,10 +534,10 @@ const sendPassword = async (req, res, next) => {
         return res
           .status(404)
           .json(
-            "An error came up while sending the password, so we did not update the password nor sent it",
+            'An error came up while sending the password, so we did not update the password nor sent it'
           );
       } else {
-        console.log("Email sent: " + info.response);
+        console.log('Email sent: ' + info.response);
         const newEncryptedPassword = bcrypt.hashSync(passwordSecure, 10); //? como hemos creado una nueva contraseña, hay que encriptarla como hicimos en el model con la original
         try {
           await User.findByIdAndUpdate(id, { password: newEncryptedPassword }); //? cambiamos la antigua password por la nueva identificandonos dentro del usuario con su id
@@ -555,7 +557,7 @@ const sendPassword = async (req, res, next) => {
           }
         } catch (error) {
           return res.status(404).json({
-            message: "Error en el catch del test del update password ❌",
+            message: 'Error en el catch del test del update password ❌',
             error: error.message,
           });
         }
@@ -565,8 +567,8 @@ const sendPassword = async (req, res, next) => {
     return next(
       setError(
         500,
-        error.message || "Error general al enviar la contraseña NO AUTH ❌",
-      ),
+        error.message || 'Error general al enviar la contraseña NO AUTH ❌'
+      )
     );
   }
 };
@@ -579,7 +581,7 @@ const exampleAuth = async (req, res) => {
 
 //! -------------------- CAMBIO DE CONTRASEÑA (logado) ----------------------
 const modifyPassword = async (req, res, next) => {
-  console.log("entro");
+  console.log('entro');
   try {
     const { password, newPassword } = req.body; //? --------------- contraseña antigua y nueva sin encriptar
     const validado = validator.isStrongPassword(newPassword); //? método para ver si supera las pruebas de seguridad
@@ -600,22 +602,22 @@ const modifyPassword = async (req, res, next) => {
           }
         } catch (error) {
           return res.status(404).json({
-            message: "error en el catch del update",
+            message: 'error en el catch del update',
             error: error.message,
           });
         }
       } else {
-        return res.status(404).json("password does not match");
+        return res.status(404).json('password does not match');
       }
     } else {
-      return res.status(404).json("Invalid password ❌ Not strong enough");
+      return res.status(404).json('Invalid password ❌ Not strong enough');
     }
   } catch (error) {
     return next(
       setError(
         500,
-        error.message || "Error general al enviar la contraseña NO AUTH ❌",
-      ),
+        error.message || 'Error general al enviar la contraseña NO AUTH ❌'
+      )
     );
   }
 };
@@ -659,6 +661,13 @@ const update = async (req, res, next) => {
       patchUser.gender = resultEnum.check ? req.body?.gender : req.user.gender;
     }
 
+    if (req.body?.interestedIn) {
+      const resultEnum = enumInterestOk(req.body?.interestedIn);
+      patchUser.interestedIn = resultEnum.check
+        ? req.body?.interestedIn
+        : req.user.interestedIn;
+    }
+
     try {
       await User.findByIdAndUpdate(req.user._id, patchUser); //? buscamos el user y actualizamos lo que queremos actualizar (patchUser). NO HACEMOS SAVE 1r valor: objeto a actualizar. 2o valor: info a actualizar
       if (req.file) deleteImgCloudinary(req.user.image); //?---- si hay imagen en la request, borramos la que había antes en el backend
@@ -680,7 +689,7 @@ const update = async (req, res, next) => {
           } else {
             //? si la info que había antes y la de ahora son iguales, indicamos que no ha cambiado nada, que la info pedida y la antigua es la misma
             testUpdate.push({
-              [key]: "Same Old Info",
+              [key]: 'Same Old Info',
             });
           }
         } else {
@@ -688,8 +697,8 @@ const update = async (req, res, next) => {
           testUpdate.push({
             [key]: false,
           });
-          console.log(updateUser[key] + "HEYTYTYYY");
-          console.log(req.body[key] + "HOLAAAAAA");
+          console.log(updateUser[key] + 'HEYTYTYYY');
+          console.log(req.body[key] + 'HOLAAAAAA');
         }
       });
       if (req.file) {
@@ -707,28 +716,28 @@ const update = async (req, res, next) => {
     } catch (error) {
       req.file && deleteImgCloudinary(catchImg);
       return res.status(404).json({
-        message: "Error al actualizar el usuario ❌",
+        message: 'Error al actualizar el usuario ❌',
         error: error.message,
       });
     }
   } catch (error) {
     req.file && deleteImgCloudinary(catchImg);
     return next(
-      setError(500, error.message || "Error general en el catch del update ❌"),
+      setError(500, error.message || 'Error general en el catch del update ❌')
     );
   }
 };
 
 //! --------------- DELETE ----------------
 const deleteUser = async (req, res, next) => {
-  console.log("HE ENTRADO")
+  console.log('HE ENTRADO');
   try {
     // const { id } = req.params;
     // console.log("soy el id " + id)
     // console.log(req.user)
     // let { _id } = req.user
     const user = await User.findByIdAndDelete(req.user?._id); //? buscamos el user y lo eliminamos
-    let id = req.user?._id
+    let id = req.user?._id;
 
     if (user) {
       //? si el user que queremos eliminar existe (tiene que hacerlo para poder eliminarlo)
@@ -738,7 +747,7 @@ const deleteUser = async (req, res, next) => {
         await Team.updateMany(
           //? ----- ahora estamos cambiando en el model de Team para poder quitar el user que ya no existe
           { likes: id }, //? ------------------------ queremos cambiar lo que sea que haya que cambiar en esta propiedad del model, si se omite se dice que se cambia cualquier conincidencia en todo el modelo. es la condición
-          { $pull: { likes: id } }, //? ---------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
+          { $pull: { likes: id } } //? ---------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
         );
 
         try {
@@ -746,7 +755,7 @@ const deleteUser = async (req, res, next) => {
           await User.updateMany(
             //? ---- ahora estamos cambiando en el model de User para poder quitar el user que ha dao follow que ya no existe
             { followers: id }, //? ------------------- condición/ubicación del cambio (eliminación)
-            { $pull: { followers: id } }, //? ----------- ejecución
+            { $pull: { followers: id } } //? ----------- ejecución
           );
 
           try {
@@ -754,7 +763,7 @@ const deleteUser = async (req, res, next) => {
             await Eleven.updateMany(
               //? ---- ahora estamos cambiando en el model de Eleven para poder quitar el jugador que ya no existe de los likes
               { likes: id },
-              { $pull: { likes: id } },
+              { $pull: { likes: id } }
             );
 
             try {
@@ -762,7 +771,7 @@ const deleteUser = async (req, res, next) => {
               await Comment.updateMany(
                 //? ----- ahora estamos cambiando en el model de comment para poder quitar el user que ya no existe
                 { likes: id }, //? --------------------------- queremos cambiar lo que sea que haya que cambiar en esta propiedad del model, si se omite se dice que se cambia cualquier conincidencia en todo el modelo. es la condición
-                { $pull: { likes: id } }, //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
+                { $pull: { likes: id } } //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
               );
 
               try {
@@ -770,161 +779,157 @@ const deleteUser = async (req, res, next) => {
                 await Player.updateMany(
                   //? ----- ahora estamos cambiando en el model de PLAYER para poder quitar el user que ya no existe
                   { likes: id }, //? --------------------------- queremos cambiar lo que sea que haya que cambiar en esta propiedad del model, si se omite se dice que se cambia cualquier conincidencia en todo el modelo. es la condición
-                  { $pull: { likes: id } }, //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
+                  { $pull: { likes: id } } //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
                 );
-  
+
                 try {
                   //? ------------------------------------------ ELIMINAMOS AL USER DEL RIDER
                   await Rider.updateMany(
                     //? ----- ahora estamos cambiando en el model de RIDER para poder quitar el user que ya no existe
                     { likes: id }, //? --------------------------- queremos cambiar lo que sea que haya que cambiar en esta propiedad del model, si se omite se dice que se cambia cualquier conincidencia en todo el modelo. es la condición
-                    { $pull: { likes: id } }, //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
+                    { $pull: { likes: id } } //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
                   );
-    
+
                   try {
                     //? ------------------------------------------ ELIMINAMOS AL USER DEL CIRCUIT
                     await Circuit.updateMany(
                       //? ----- ahora estamos cambiando en el model de CIRCUIT para poder quitar el user que ya no existe
                       { likes: id }, //? --------------------------- queremos cambiar lo que sea que haya que cambiar en esta propiedad del model, si se omite se dice que se cambia cualquier conincidencia en todo el modelo. es la condición
-                      { $pull: { likes: id } }, //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
+                      { $pull: { likes: id } } //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
                     );
-      
+
                     try {
                       //? ------------------------------------------ ELIMINAMOS AL USER DEL PODIUM
                       await Player.updateMany(
                         //? ----- ahora estamos cambiando en el model de PODIUM para poder quitar el user que ya no existe
                         { likes: id }, //? --------------------------- queremos cambiar lo que sea que haya que cambiar en esta propiedad del model, si se omite se dice que se cambia cualquier conincidencia en todo el modelo. es la condición
-                        { $pull: { likes: id } }, //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
+                        { $pull: { likes: id } } //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
                       );
-        
+
                       try {
                         //? ------------------------------------------ ELIMINAMOS AL USER DEL LIFTER
                         await Lifter.updateMany(
                           //? ----- ahora estamos cambiando en el model de LIFTER para poder quitar el user que ya no existe
                           { likes: id }, //? --------------------------- queremos cambiar lo que sea que haya que cambiar en esta propiedad del model, si se omite se dice que se cambia cualquier conincidencia en todo el modelo. es la condición
-                          { $pull: { likes: id } }, //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
+                          { $pull: { likes: id } } //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
                         );
-          
+
                         try {
                           //? ------------------------------------------ ELIMINAMOS AL USER DEL WEIGHTCATEGORY
                           await WeightCategory.updateMany(
                             //? ----- ahora estamos cambiando en el model de WEIGHTCATEGORY para poder quitar el user que ya no existe
                             { likes: id }, //? --------------------------- queremos cambiar lo que sea que haya que cambiar en esta propiedad del model, si se omite se dice que se cambia cualquier conincidencia en todo el modelo. es la condición
-                            { $pull: { likes: id } }, //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
+                            { $pull: { likes: id } } //? ------------------- estamos diciendo que quite de la propiedad likes, el id indicado, es decir el del user que se ha eliminado. es la ejecución
                           );
-            
+
+                          try {
+                            const yourTeamId = user.yourteam[0];
+                            if (user.yourteam.length > 0) {
+                              return res.redirect(
+                                307,
+                                `http://localhost:8081/api/v1/eleven/delete/${yourTeamId}` //? redirigimos al delete eleven porque si tiene un equipo a su nombre, ese tmb se borra
+                              );
+                            }
+
                             try {
-                              const yourTeamId = user.yourteam[0]
-                              if (user.yourteam.length > 0) {
-                                return res.redirect(
-                                  307,
-                                  `http://localhost:8081/api/v1/eleven/delete/${yourTeamId}`, //? redirigimos al delete eleven porque si tiene un equipo a su nombre, ese tmb se borra
-                                )
-                              }
-
-                              try {
-                                const allUserComments = await Comment.find({creator: id}) //? pilla los comments que haya creado el usuario q estamos borrando
-                                console.log("he entrado en el try de comments !!!!!!!!!!!!!!!!!!!!!!", allUserComments)
-                                if (allUserComments) {
-                                  if (allUserComments.length > 0) {
-                                    for (let comment of allUserComments) {
-                                      return res.redirect(
-                                        307,
-                                        `http://localhost:8081/api/v1/comment/delete/${comment._id}`, //? redirigimos al delete comment porque si ha creado comments, tmb se borran. por cada comment que encuentre, se repite el redirect para borrarlos a todos
-                                      )
-                                    }
+                              const allUserComments = await Comment.find({
+                                creator: id,
+                              }); //? pilla los comments que haya creado el usuario q estamos borrando
+                              console.log(
+                                'he entrado en el try de comments !!!!!!!!!!!!!!!!!!!!!!',
+                                allUserComments
+                              );
+                              if (allUserComments) {
+                                if (allUserComments.length > 0) {
+                                  for (let comment of allUserComments) {
+                                    return res.redirect(
+                                      307,
+                                      `http://localhost:8081/api/v1/comment/delete/${comment._id}` //? redirigimos al delete comment porque si ha creado comments, tmb se borran. por cada comment que encuentre, se repite el redirect para borrarlos a todos
+                                    );
                                   }
-                                } else {
-                                  console.log("no tengo comments")
                                 }
-  
-                              } catch (error) {
-                                return next(
-                                  setError(
-                                    500,
-                                    error.message ||
-                                      "Error al eliminar los comments (enteros) del user ❌",
-                                  ),
-                                );
+                              } else {
+                                console.log('no tengo comments');
                               }
-
                             } catch (error) {
                               return next(
                                 setError(
                                   500,
                                   error.message ||
-                                    "Error al eliminar el eleven (entero) del user ❌",
-                                ),
+                                    'Error al eliminar los comments (enteros) del user ❌'
+                                )
                               );
                             }
-                          
+                          } catch (error) {
+                            return next(
+                              setError(
+                                500,
+                                error.message ||
+                                  'Error al eliminar el eleven (entero) del user ❌'
+                              )
+                            );
+                          }
                         } catch (error) {
                           return next(
                             setError(
                               500,
                               error.message ||
-                                "Error al eliminar el user (like) del weight category ❌",
-                            ),
+                                'Error al eliminar el user (like) del weight category ❌'
+                            )
                           );
                         }
-                        
                       } catch (error) {
                         return next(
                           setError(
                             500,
                             error.message ||
-                              "Error al eliminar el user (like) del lifter ❌",
-                          ),
+                              'Error al eliminar el user (like) del lifter ❌'
+                          )
                         );
                       }
-                      
                     } catch (error) {
                       return next(
                         setError(
                           500,
                           error.message ||
-                            "Error al eliminar el user (like) del podium ❌",
-                        ),
+                            'Error al eliminar el user (like) del podium ❌'
+                        )
                       );
                     }
-                    
                   } catch (error) {
                     return next(
                       setError(
                         500,
                         error.message ||
-                          "Error al eliminar el user (like) del circuit ❌",
-                      ),
+                          'Error al eliminar el user (like) del circuit ❌'
+                      )
                     );
                   }
-                  
                 } catch (error) {
                   return next(
                     setError(
                       500,
                       error.message ||
-                        "Error al eliminar el user (like) del rider ❌",
-                    ),
+                        'Error al eliminar el user (like) del rider ❌'
+                    )
                   );
                 }
-                
               } catch (error) {
                 return next(
                   setError(
                     500,
                     error.message ||
-                      "Error al eliminar el user (like) del player ❌",
-                  ),
+                      'Error al eliminar el user (like) del player ❌'
+                  )
                 );
               }
-
             } catch (error) {
               return next(
                 setError(
                   500,
                   error.message ||
-                    "Error al eliminar el user (like) del comment ❌",
-                ),
+                    'Error al eliminar el user (like) del comment ❌'
+                )
               );
             }
           } catch (error) {
@@ -932,24 +937,24 @@ const deleteUser = async (req, res, next) => {
               setError(
                 500,
                 error.message ||
-                  "Error al eliminar el user (like) del eleven ❌",
-              ),
+                  'Error al eliminar el user (like) del eleven ❌'
+              )
             );
           }
         } catch (error) {
           return next(
             setError(
               500,
-              error.message || "Error al eliminar el user (follow) del user ❌",
-            ),
+              error.message || 'Error al eliminar el user (follow) del user ❌'
+            )
           );
         }
       } catch (error) {
         return next(
           setError(
             500,
-            error.message || "Error al eliminar el user (like) del equipo ❌",
-          ),
+            error.message || 'Error al eliminar el user (like) del equipo ❌'
+          )
         );
       }
 
@@ -959,11 +964,11 @@ const deleteUser = async (req, res, next) => {
         deleteTest: findByIdUser ? false : true, //? si existe, el test ha dado fallo y si no existe ha aprobado el test
       });
     } else {
-      return res.status(404).json("este user no existe ❌"); //? si no existe el user antes de eliminarlo hay que dar error porque el jugador seleccionado para borrar no existia en un primer momento
+      return res.status(404).json('este user no existe ❌'); //? si no existe el user antes de eliminarlo hay que dar error porque el jugador seleccionado para borrar no existia en un primer momento
     }
   } catch (error) {
     return next(
-      setError(500, error.message || "Error general al eliminar el user ❌"),
+      setError(500, error.message || 'Error general al eliminar el user ❌')
     );
   }
 };
@@ -1002,13 +1007,13 @@ const addFavTeam = async (req, res, next) => {
           });
         } catch (error) {
           return res.status(404).json({
-            error: "Error al quitar el User, del Team ❌",
+            error: 'Error al quitar el User, del Team ❌',
             message: error.message,
           });
         }
       } catch (error) {
         return res.status(404).json({
-          message: "Error al quitar el Team, del User ❌",
+          message: 'Error al quitar el Team, del User ❌',
           error: error.message,
         });
       }
@@ -1034,13 +1039,13 @@ const addFavTeam = async (req, res, next) => {
           });
         } catch (error) {
           return res.status(404).json({
-            error: "Error al añadir el User, al Team ❌",
+            error: 'Error al añadir el User, al Team ❌',
             message: error.message,
           });
         }
       } catch (error) {
         return res.status(404).json({
-          message: "Error al añadir el Team, al User ❌",
+          message: 'Error al añadir el Team, al User ❌',
           error: error.message,
         });
       }
@@ -1050,8 +1055,8 @@ const addFavTeam = async (req, res, next) => {
       setError(
         500,
         error.message ||
-          "Error general al hacer toggle de Equipos Favoritos ❤️❌",
-      ),
+          'Error general al hacer toggle de Equipos Favoritos ❤️❌'
+      )
     );
   }
 };
@@ -1060,8 +1065,8 @@ const addFavTeam = async (req, res, next) => {
 const addFavPlayer = async (req, res, next) => {
   try {
     const { idPlayer } = req.params; //? --- recibimos el id del equipo que queremos darle like por el url
-    console.log("HE ENTRADO EN EL BACKEND")
-    console.log(idPlayer)
+    console.log('HE ENTRADO EN EL BACKEND');
+    console.log(idPlayer);
     const elementPlayer = await Player.findById(idPlayer);
     const { _id, favPlayers, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
 
@@ -1087,13 +1092,13 @@ const addFavPlayer = async (req, res, next) => {
           });
         } catch (error) {
           return res.status(404).json({
-            error: "Error al quitar el User, del Jugador ❌",
+            error: 'Error al quitar el User, del Jugador ❌',
             message: error.message,
           });
         }
       } catch (error) {
         return res.status(404).json({
-          message: "Error al quitar el Jugador, del User ❌",
+          message: 'Error al quitar el Jugador, del User ❌',
           error: error.message,
         });
       }
@@ -1119,13 +1124,13 @@ const addFavPlayer = async (req, res, next) => {
           });
         } catch (error) {
           return res.status(404).json({
-            error: "Error al añadir el User, al Jugador ❌",
+            error: 'Error al añadir el User, al Jugador ❌',
             message: error.message,
           });
         }
       } catch (error) {
         return res.status(404).json({
-          message: "Error al añadir el Jugador, al User ❌",
+          message: 'Error al añadir el Jugador, al User ❌',
           error: error.message,
         });
       }
@@ -1135,8 +1140,8 @@ const addFavPlayer = async (req, res, next) => {
       setError(
         500,
         error.message ||
-          "Error general al hacer toggle de Jugadores Favoritos ❤️❌",
-      ),
+          'Error general al hacer toggle de Jugadores Favoritos ❤️❌'
+      )
     );
   }
 };
@@ -1170,13 +1175,13 @@ const addFavEleven = async (req, res, next) => {
           });
         } catch (error) {
           return res.status(404).json({
-            error: "Error al quitar el User, del Eleven ❌",
+            error: 'Error al quitar el User, del Eleven ❌',
             message: error.message,
           });
         }
       } catch (error) {
         return res.status(404).json({
-          message: "Error al quitar el Eleven, del User ❌",
+          message: 'Error al quitar el Eleven, del User ❌',
           error: error.message,
         });
       }
@@ -1202,13 +1207,13 @@ const addFavEleven = async (req, res, next) => {
           });
         } catch (error) {
           return res.status(404).json({
-            error: "Error al añadir el User, al Eleven ❌",
+            error: 'Error al añadir el User, al Eleven ❌',
             message: error.message,
           });
         }
       } catch (error) {
         return res.status(404).json({
-          message: "Error al añadir el Eleven, al User ❌",
+          message: 'Error al añadir el Eleven, al User ❌',
           error: error.message,
         });
       }
@@ -1218,8 +1223,8 @@ const addFavEleven = async (req, res, next) => {
       setError(
         500,
         error.message ||
-          "Error general al hacer toggle de Elevens Favoritos ❤️❌",
-      ),
+          'Error general al hacer toggle de Elevens Favoritos ❤️❌'
+      )
     );
   }
 };
@@ -1253,13 +1258,13 @@ const addFavComment = async (req, res, next) => {
           });
         } catch (error) {
           return res.status(404).json({
-            error: "Error al quitar el User, del Comment ❌",
+            error: 'Error al quitar el User, del Comment ❌',
             message: error.message,
           });
         }
       } catch (error) {
         return res.status(404).json({
-          message: "Error al quitar el Comment, del User ❌",
+          message: 'Error al quitar el Comment, del User ❌',
           error: error.message,
         });
       }
@@ -1285,13 +1290,13 @@ const addFavComment = async (req, res, next) => {
           });
         } catch (error) {
           return res.status(404).json({
-            error: "Error al añadir el User, al Comment ❌",
+            error: 'Error al añadir el User, al Comment ❌',
             message: error.message,
           });
         }
       } catch (error) {
         return res.status(404).json({
-          message: "Error al añadir el Comment, al User ❌",
+          message: 'Error al añadir el Comment, al User ❌',
           error: error.message,
         });
       }
@@ -1301,20 +1306,18 @@ const addFavComment = async (req, res, next) => {
       setError(
         500,
         error.message ||
-          "Error general al hacer toggle de Comentarios Favoritos ❤️❌",
-      ),
+          'Error general al hacer toggle de Comentarios Favoritos ❤️❌'
+      )
     );
   }
 };
-
-
 
 //! ------------------- ADD FAV RIDER ----------------------
 const addFavRider = async (req, res, next) => {
   try {
     const { idRider } = req.params; //? --- recibimos el id del equipo que queremos darle like por el url
-    console.log("HE ENTRADO EN EL BACKEND")
-    console.log(idRider)
+    console.log('HE ENTRADO EN EL BACKEND');
+    console.log(idRider);
     const elementRider = await Rider.findById(idRider);
     if (elementRider) {
       const { _id, favRiders, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
@@ -1331,9 +1334,9 @@ const addFavRider = async (req, res, next) => {
               //? aquí se actualiza el modelo de rider para sacar al user como like
               $pull: { likes: _id },
             });
-  
+
             // todo --------- RESPONSE ------------- //
-  
+
             return res.status(200).json({
               userUpdate: await User.findById(_id),
               riderUpdate: await Rider.findById(idRider),
@@ -1341,13 +1344,13 @@ const addFavRider = async (req, res, next) => {
             });
           } catch (error) {
             return res.status(404).json({
-              error: "Error al quitar el User, del RIDER ❌",
+              error: 'Error al quitar el User, del RIDER ❌',
               message: error.message,
             });
           }
         } catch (error) {
           return res.status(404).json({
-            message: "Error al quitar el RIDER, del User ❌",
+            message: 'Error al quitar el RIDER, del User ❌',
             error: error.message,
           });
         }
@@ -1363,9 +1366,9 @@ const addFavRider = async (req, res, next) => {
               //? aquí se actualiza el modelo de RIDER para meter al user como like
               $push: { likes: _id },
             });
-  
+
             // todo --------- RESPONSE ------------- //
-  
+
             return res.status(200).json({
               userUpdate: await User.findById(_id),
               riderUpdate: await Rider.findById(idRider),
@@ -1373,28 +1376,28 @@ const addFavRider = async (req, res, next) => {
             });
           } catch (error) {
             return res.status(404).json({
-              error: "Error al añadir el User, al RIDER ❌",
+              error: 'Error al añadir el User, al RIDER ❌',
               message: error.message,
             });
           }
         } catch (error) {
           return res.status(404).json({
-            message: "Error al añadir el RIDER, al User ❌",
+            message: 'Error al añadir el RIDER, al User ❌',
             error: error.message,
           });
         }
       }
     } else {
-      return res.status(404).json("no se han encontrado riders con el id indicado ❌")
+      return res
+        .status(404)
+        .json('no se han encontrado riders con el id indicado ❌');
     }
-
   } catch (error) {
     return next(
       setError(
         500,
-        error.message ||
-          "Error general al hacer toggle de RIDER Favoritos ❤️❌",
-      ),
+        error.message || 'Error general al hacer toggle de RIDER Favoritos ❤️❌'
+      )
     );
   }
 };
@@ -1403,87 +1406,89 @@ const addFavRider = async (req, res, next) => {
 const addFavCircuit = async (req, res, next) => {
   try {
     const { idCircuit } = req.params; //? --- recibimos el id del equipo que queremos darle like por el url
-    console.log("HE ENTRADO EN EL BACKEND")
-    console.log(idCircuit)
+    console.log('HE ENTRADO EN EL BACKEND');
+    console.log(idCircuit);
     const elementCircuit = await Circuit.findById(idCircuit);
     if (elementCircuit) {
       const { _id, favCircuits, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
 
-    if (favCircuits.includes(idCircuit)) {
-      //! ------------- PULL -----------------
-      try {
-        await User.findByIdAndUpdate(_id, {
-          //? actualizamos el usuario. 1r param => condición ()
-          $pull: { favCircuits: idCircuit }, //? 2o param => ejecución (sacamos id del CIRCUIT del user)
-        });
+      if (favCircuits.includes(idCircuit)) {
+        //! ------------- PULL -----------------
         try {
-          await Circuit.findByIdAndUpdate(idCircuit, {
-            //? aquí se actualiza el modelo de circuit para sacar al user como like
-            $pull: { likes: _id },
+          await User.findByIdAndUpdate(_id, {
+            //? actualizamos el usuario. 1r param => condición ()
+            $pull: { favCircuits: idCircuit }, //? 2o param => ejecución (sacamos id del CIRCUIT del user)
           });
+          try {
+            await Circuit.findByIdAndUpdate(idCircuit, {
+              //? aquí se actualiza el modelo de circuit para sacar al user como like
+              $pull: { likes: _id },
+            });
 
-          // todo --------- RESPONSE ------------- //
+            // todo --------- RESPONSE ------------- //
 
-          return res.status(200).json({
-            userUpdate: await User.findById(_id),
-            circuitUpdate: await Circuit.findById(idCircuit),
-            action: `Se ha quitado el CIRCUIT ${elementCircuit.name} como favorito del usuario ${name}`,
-          });
+            return res.status(200).json({
+              userUpdate: await User.findById(_id),
+              circuitUpdate: await Circuit.findById(idCircuit),
+              action: `Se ha quitado el CIRCUIT ${elementCircuit.name} como favorito del usuario ${name}`,
+            });
+          } catch (error) {
+            return res.status(404).json({
+              error: 'Error al quitar el User, del CIRCUIT ❌',
+              message: error.message,
+            });
+          }
         } catch (error) {
           return res.status(404).json({
-            error: "Error al quitar el User, del CIRCUIT ❌",
-            message: error.message,
+            message: 'Error al quitar el CIRCUIT, del User ❌',
+            error: error.message,
           });
         }
-      } catch (error) {
-        return res.status(404).json({
-          message: "Error al quitar el CIRCUIT, del User ❌",
-          error: error.message,
-        });
-      }
-    } else {
-      //! ---------- PUSH ----------------
-      try {
-        await User.findByIdAndUpdate(_id, {
-          //? actualizamos el usuario. 1r param => condición ()
-          $push: { favCircuits: idCircuit }, //? 2o param => ejecución (metemos id de CIRCUIT en el user)
-        });
+      } else {
+        //! ---------- PUSH ----------------
         try {
-          await Circuit.findByIdAndUpdate(idCircuit, {
-            //? aquí se actualiza el modelo de CIRCUIT para meter al user como like
-            $push: { likes: _id },
+          await User.findByIdAndUpdate(_id, {
+            //? actualizamos el usuario. 1r param => condición ()
+            $push: { favCircuits: idCircuit }, //? 2o param => ejecución (metemos id de CIRCUIT en el user)
           });
+          try {
+            await Circuit.findByIdAndUpdate(idCircuit, {
+              //? aquí se actualiza el modelo de CIRCUIT para meter al user como like
+              $push: { likes: _id },
+            });
 
-          // todo --------- RESPONSE ------------- //
+            // todo --------- RESPONSE ------------- //
 
-          return res.status(200).json({
-            userUpdate: await User.findById(_id),
-            circuitUpdate: await Circuit.findById(idCircuit),
-            action: `Se ha añadido el CIRCUIT ${elementCircuit.name} como favorito del usuario ${name}`,
-          });
+            return res.status(200).json({
+              userUpdate: await User.findById(_id),
+              circuitUpdate: await Circuit.findById(idCircuit),
+              action: `Se ha añadido el CIRCUIT ${elementCircuit.name} como favorito del usuario ${name}`,
+            });
+          } catch (error) {
+            return res.status(404).json({
+              error: 'Error al añadir el User, al CIRCUIT ❌',
+              message: error.message,
+            });
+          }
         } catch (error) {
           return res.status(404).json({
-            error: "Error al añadir el User, al CIRCUIT ❌",
-            message: error.message,
+            message: 'Error al añadir el CIRCUIT, al User ❌',
+            error: error.message,
           });
         }
-      } catch (error) {
-        return res.status(404).json({
-          message: "Error al añadir el CIRCUIT, al User ❌",
-          error: error.message,
-        });
       }
-    }
     } else {
-      return res.status(404).json("no se han encontrado circuits con el id indicado ❌")
+      return res
+        .status(404)
+        .json('no se han encontrado circuits con el id indicado ❌');
     }
   } catch (error) {
     return next(
       setError(
         500,
         error.message ||
-          "Error general al hacer toggle de CIRCUIT Favoritos ❤️❌",
-      ),
+          'Error general al hacer toggle de CIRCUIT Favoritos ❤️❌'
+      )
     );
   }
 };
@@ -1492,88 +1497,89 @@ const addFavCircuit = async (req, res, next) => {
 const addFavPodium = async (req, res, next) => {
   try {
     const { idPodium } = req.params; //? --- recibimos el id del equipo que queremos darle like por el url
-    console.log("HE ENTRADO EN EL BACKEND")
-    console.log(idPodium)
+    console.log('HE ENTRADO EN EL BACKEND');
+    console.log(idPodium);
     const elementPodium = await Podium.findById(idPodium);
     if (elementPodium) {
       const { _id, favPodiums, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
 
-    if (favPodiums.includes(idPodium)) {
-      //! ------------- PULL -----------------
-      try {
-        await User.findByIdAndUpdate(_id, {
-          //? actualizamos el usuario. 1r param => condición ()
-          $pull: { favPodiums: idPodium }, //? 2o param => ejecución (sacamos id del PODIUM del user)
-        });
+      if (favPodiums.includes(idPodium)) {
+        //! ------------- PULL -----------------
         try {
-          await Podium.findByIdAndUpdate(idPodium, {
-            //? aquí se actualiza el modelo de circuit para sacar al user como like
-            $pull: { likes: _id },
+          await User.findByIdAndUpdate(_id, {
+            //? actualizamos el usuario. 1r param => condición ()
+            $pull: { favPodiums: idPodium }, //? 2o param => ejecución (sacamos id del PODIUM del user)
           });
+          try {
+            await Podium.findByIdAndUpdate(idPodium, {
+              //? aquí se actualiza el modelo de circuit para sacar al user como like
+              $pull: { likes: _id },
+            });
 
-          // todo --------- RESPONSE ------------- //
+            // todo --------- RESPONSE ------------- //
 
-          return res.status(200).json({
-            userUpdate: await User.findById(_id),
-            podiumUpdate: await Podium.findById(idPodium),
-            action: `Se ha quitado el PODIUM ${elementPodium.name} como favorito del usuario ${name}`,
-          });
+            return res.status(200).json({
+              userUpdate: await User.findById(_id),
+              podiumUpdate: await Podium.findById(idPodium),
+              action: `Se ha quitado el PODIUM ${elementPodium.name} como favorito del usuario ${name}`,
+            });
+          } catch (error) {
+            return res.status(404).json({
+              error: 'Error al quitar el User, del PODIUM ❌',
+              message: error.message,
+            });
+          }
         } catch (error) {
           return res.status(404).json({
-            error: "Error al quitar el User, del PODIUM ❌",
-            message: error.message,
+            message: 'Error al quitar el PODIUM, del User ❌',
+            error: error.message,
           });
         }
-      } catch (error) {
-        return res.status(404).json({
-          message: "Error al quitar el PODIUM, del User ❌",
-          error: error.message,
-        });
-      }
-    } else {
-      //! ---------- PUSH ----------------
-      try {
-        await User.findByIdAndUpdate(_id, {
-          //? actualizamos el usuario. 1r param => condición ()
-          $push: { favPodiums: idPodium }, //? 2o param => ejecución (metemos id de PODIUM en el user)
-        });
+      } else {
+        //! ---------- PUSH ----------------
         try {
-          await Podium.findByIdAndUpdate(idPodium, {
-            //? aquí se actualiza el modelo de PODIUM para meter al user como like
-            $push: { likes: _id },
+          await User.findByIdAndUpdate(_id, {
+            //? actualizamos el usuario. 1r param => condición ()
+            $push: { favPodiums: idPodium }, //? 2o param => ejecución (metemos id de PODIUM en el user)
           });
+          try {
+            await Podium.findByIdAndUpdate(idPodium, {
+              //? aquí se actualiza el modelo de PODIUM para meter al user como like
+              $push: { likes: _id },
+            });
 
-          // todo --------- RESPONSE ------------- //
+            // todo --------- RESPONSE ------------- //
 
-          return res.status(200).json({
-            userUpdate: await User.findById(_id),
-            podiumUpdate: await Podium.findById(idPodium),
-            action: `Se ha añadido el PODIUM ${elementPodium.name} como favorito del usuario ${name}`,
-          });
+            return res.status(200).json({
+              userUpdate: await User.findById(_id),
+              podiumUpdate: await Podium.findById(idPodium),
+              action: `Se ha añadido el PODIUM ${elementPodium.name} como favorito del usuario ${name}`,
+            });
+          } catch (error) {
+            return res.status(404).json({
+              error: 'Error al añadir el User, al PODIUM ❌',
+              message: error.message,
+            });
+          }
         } catch (error) {
           return res.status(404).json({
-            error: "Error al añadir el User, al PODIUM ❌",
-            message: error.message,
+            message: 'Error al añadir el PODIUM, al User ❌',
+            error: error.message,
           });
         }
-      } catch (error) {
-        return res.status(404).json({
-          message: "Error al añadir el PODIUM, al User ❌",
-          error: error.message,
-        });
       }
-    }
     } else {
-      return res.status(404).json("no se han encontrado podiums con el id indicado ❌")
+      return res
+        .status(404)
+        .json('no se han encontrado podiums con el id indicado ❌');
     }
-    
   } catch (error) {
     return next(
       setError(
         500,
         error.message ||
-          "Error general al hacer toggle de PODIUM Favoritos ❤️❌",
-      ),
+          'Error general al hacer toggle de PODIUM Favoritos ❤️❌'
+      )
     );
   }
 };
@@ -1582,89 +1588,90 @@ const addFavPodium = async (req, res, next) => {
 const addFavLifter = async (req, res, next) => {
   try {
     const { idLifter } = req.params; //? --- recibimos el id del equipo que queremos darle like por el url
-    console.log("HE ENTRADO EN EL BACKEND")
-    console.log(idLifter)
+    console.log('HE ENTRADO EN EL BACKEND');
+    console.log(idLifter);
     const elementLifter = await Lifter.findById(idLifter);
 
     if (elementLifter) {
       const { _id, favLifters, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
 
-    if (favLifters.includes(idLifter)) {
-      //! ------------- PULL -----------------
-      try {
-        await User.findByIdAndUpdate(_id, {
-          //? actualizamos el usuario. 1r param => condición ()
-          $pull: { favLifters: idLifter }, //? 2o param => ejecución (sacamos id del LIFTER del user)
-        });
+      if (favLifters.includes(idLifter)) {
+        //! ------------- PULL -----------------
         try {
-          await Lifter.findByIdAndUpdate(idLifter, {
-            //? aquí se actualiza el modelo de lifter para sacar al user como like
-            $pull: { likes: _id },
+          await User.findByIdAndUpdate(_id, {
+            //? actualizamos el usuario. 1r param => condición ()
+            $pull: { favLifters: idLifter }, //? 2o param => ejecución (sacamos id del LIFTER del user)
           });
+          try {
+            await Lifter.findByIdAndUpdate(idLifter, {
+              //? aquí se actualiza el modelo de lifter para sacar al user como like
+              $pull: { likes: _id },
+            });
 
-          // todo --------- RESPONSE ------------- //
+            // todo --------- RESPONSE ------------- //
 
-          return res.status(200).json({
-            userUpdate: await User.findById(_id),
-            lifterUpdate: await Lifter.findById(idLifter),
-            action: `Se ha quitado el LIFTER ${elementLifter.name} como favorito del usuario ${name}`,
-          });
+            return res.status(200).json({
+              userUpdate: await User.findById(_id),
+              lifterUpdate: await Lifter.findById(idLifter),
+              action: `Se ha quitado el LIFTER ${elementLifter.name} como favorito del usuario ${name}`,
+            });
+          } catch (error) {
+            return res.status(404).json({
+              error: 'Error al quitar el User, del LIFTER ❌',
+              message: error.message,
+            });
+          }
         } catch (error) {
           return res.status(404).json({
-            error: "Error al quitar el User, del LIFTER ❌",
-            message: error.message,
+            message: 'Error al quitar el LIFTER, del User ❌',
+            error: error.message,
           });
         }
-      } catch (error) {
-        return res.status(404).json({
-          message: "Error al quitar el LIFTER, del User ❌",
-          error: error.message,
-        });
-      }
-    } else {
-      //! ---------- PUSH ----------------
-      try {
-        await User.findByIdAndUpdate(_id, {
-          //? actualizamos el usuario. 1r param => condición ()
-          $push: { favLifters: idLifter }, //? 2o param => ejecución (metemos id de LIFTER en el user)
-        });
+      } else {
+        //! ---------- PUSH ----------------
         try {
-          await Lifter.findByIdAndUpdate(idLifter, {
-            //? aquí se actualiza el modelo de LIFTER para meter al user como like
-            $push: { likes: _id },
+          await User.findByIdAndUpdate(_id, {
+            //? actualizamos el usuario. 1r param => condición ()
+            $push: { favLifters: idLifter }, //? 2o param => ejecución (metemos id de LIFTER en el user)
           });
+          try {
+            await Lifter.findByIdAndUpdate(idLifter, {
+              //? aquí se actualiza el modelo de LIFTER para meter al user como like
+              $push: { likes: _id },
+            });
 
-          // todo --------- RESPONSE ------------- //
+            // todo --------- RESPONSE ------------- //
 
-          return res.status(200).json({
-            userUpdate: await User.findById(_id),
-            lifterUpdate: await Lifter.findById(idLifter),
-            action: `Se ha añadido el LIFTER ${elementLifter.name} como favorito del usuario ${name}`,
-          });
+            return res.status(200).json({
+              userUpdate: await User.findById(_id),
+              lifterUpdate: await Lifter.findById(idLifter),
+              action: `Se ha añadido el LIFTER ${elementLifter.name} como favorito del usuario ${name}`,
+            });
+          } catch (error) {
+            return res.status(404).json({
+              error: 'Error al añadir el User, al LIFTER ❌',
+              message: error.message,
+            });
+          }
         } catch (error) {
           return res.status(404).json({
-            error: "Error al añadir el User, al LIFTER ❌",
-            message: error.message,
+            message: 'Error al añadir el LIFTER, al User ❌',
+            error: error.message,
           });
         }
-      } catch (error) {
-        return res.status(404).json({
-          message: "Error al añadir el LIFTER, al User ❌",
-          error: error.message,
-        });
       }
-    }
     } else {
-      return res.status(404).json("no se han encontrado lifter con el id indicado ❌")
+      return res
+        .status(404)
+        .json('no se han encontrado lifter con el id indicado ❌');
     }
-    
   } catch (error) {
     return next(
       setError(
         500,
         error.message ||
-          "Error general al hacer toggle de LIFTER Favoritos ❤️❌",
-      ),
+          'Error general al hacer toggle de LIFTER Favoritos ❤️❌'
+      )
     );
   }
 };
@@ -1673,94 +1680,96 @@ const addFavLifter = async (req, res, next) => {
 const addFavWeightCategory = async (req, res, next) => {
   try {
     const { idWeightCategory } = req.params; //? --- recibimos el id del equipo que queremos darle like por el url
-    console.log("HE ENTRADO EN EL BACKEND")
-    console.log(idWeightCategory)
-    const elementWeightCategory = await WeightCategory.findById(idWeightCategory);
+    console.log('HE ENTRADO EN EL BACKEND');
+    console.log(idWeightCategory);
+    const elementWeightCategory =
+      await WeightCategory.findById(idWeightCategory);
 
     if (elementWeightCategory) {
       const { _id, favWeightCategories, name } = req.user; //? recibimos el id del user por el req.user porque es autenticado y sabemos quien es por el token
 
-    if (favWeightCategories.includes(idWeightCategory)) {
-      //! ------------- PULL -----------------
-      try {
-        await User.findByIdAndUpdate(_id, {
-          //? actualizamos el usuario. 1r param => condición ()
-          $pull: { favWeightCategories: idWeightCategory }, //? 2o param => ejecución (sacamos id del WEIGHT CATEGORY del user)
-        });
+      if (favWeightCategories.includes(idWeightCategory)) {
+        //! ------------- PULL -----------------
         try {
-          await WeightCategory.findByIdAndUpdate(idWeightCategory, {
-            //? aquí se actualiza el modelo de weight category para sacar al user como like
-            $pull: { likes: _id },
+          await User.findByIdAndUpdate(_id, {
+            //? actualizamos el usuario. 1r param => condición ()
+            $pull: { favWeightCategories: idWeightCategory }, //? 2o param => ejecución (sacamos id del WEIGHT CATEGORY del user)
           });
+          try {
+            await WeightCategory.findByIdAndUpdate(idWeightCategory, {
+              //? aquí se actualiza el modelo de weight category para sacar al user como like
+              $pull: { likes: _id },
+            });
 
-          // todo --------- RESPONSE ------------- //
+            // todo --------- RESPONSE ------------- //
 
-          return res.status(200).json({
-            userUpdate: await User.findById(_id),
-            weightCategoryUpdate: await WeightCategory.findById(idWeightCategory),
-            action: `Se ha quitado el WEIGHT CATEGORY ${elementWeightCategory.name} como favorito del usuario ${name}`,
-          });
+            return res.status(200).json({
+              userUpdate: await User.findById(_id),
+              weightCategoryUpdate:
+                await WeightCategory.findById(idWeightCategory),
+              action: `Se ha quitado el WEIGHT CATEGORY ${elementWeightCategory.name} como favorito del usuario ${name}`,
+            });
+          } catch (error) {
+            return res.status(404).json({
+              error: 'Error al quitar el User, del WEIGHT CATEGORY ❌',
+              message: error.message,
+            });
+          }
         } catch (error) {
           return res.status(404).json({
-            error: "Error al quitar el User, del WEIGHT CATEGORY ❌",
-            message: error.message,
+            message: 'Error al quitar el WEIGHT CATEGORY, del User ❌',
+            error: error.message,
           });
         }
-      } catch (error) {
-        return res.status(404).json({
-          message: "Error al quitar el WEIGHT CATEGORY, del User ❌",
-          error: error.message,
-        });
-      }
-    } else {
-      //! ---------- PUSH ----------------
-      try {
-        await User.findByIdAndUpdate(_id, {
-          //? actualizamos el usuario. 1r param => condición ()
-          $push: { favWeightCategories: idWeightCategory }, //? 2o param => ejecución (metemos id de WEIGHT CATEGORY en el user)
-        });
+      } else {
+        //! ---------- PUSH ----------------
         try {
-          await WeightCategory.findByIdAndUpdate(idWeightCategory, {
-            //? aquí se actualiza el modelo de WEIGHT CATEGORY para meter al user como like
-            $push: { likes: _id },
+          await User.findByIdAndUpdate(_id, {
+            //? actualizamos el usuario. 1r param => condición ()
+            $push: { favWeightCategories: idWeightCategory }, //? 2o param => ejecución (metemos id de WEIGHT CATEGORY en el user)
           });
+          try {
+            await WeightCategory.findByIdAndUpdate(idWeightCategory, {
+              //? aquí se actualiza el modelo de WEIGHT CATEGORY para meter al user como like
+              $push: { likes: _id },
+            });
 
-          // todo --------- RESPONSE ------------- //
+            // todo --------- RESPONSE ------------- //
 
-          return res.status(200).json({
-            userUpdate: await User.findById(_id),
-            weightCategoryUpdate: await WeightCategory.findById(idWeightCategory),
-            action: `Se ha añadido el WEIGHT CATEGORY ${elementWeightCategory.name} como favorito del usuario ${name}`,
-          });
+            return res.status(200).json({
+              userUpdate: await User.findById(_id),
+              weightCategoryUpdate:
+                await WeightCategory.findById(idWeightCategory),
+              action: `Se ha añadido el WEIGHT CATEGORY ${elementWeightCategory.name} como favorito del usuario ${name}`,
+            });
+          } catch (error) {
+            return res.status(404).json({
+              error: 'Error al añadir el User, al WEIGHT CATEGORY ❌',
+              message: error.message,
+            });
+          }
         } catch (error) {
           return res.status(404).json({
-            error: "Error al añadir el User, al WEIGHT CATEGORY ❌",
-            message: error.message,
+            message: 'Error al añadir el WEIGHT CATEGORY, al User ❌',
+            error: error.message,
           });
         }
-      } catch (error) {
-        return res.status(404).json({
-          message: "Error al añadir el WEIGHT CATEGORY, al User ❌",
-          error: error.message,
-        });
       }
-    }
     } else {
-      return res.status(404).json("no se han encontrado weight category con el id indicado ❌")
+      return res
+        .status(404)
+        .json('no se han encontrado weight category con el id indicado ❌');
     }
-    
   } catch (error) {
     return next(
       setError(
         500,
         error.message ||
-          "Error general al hacer toggle de WEIGHT CATEGORY Favoritos ❤️❌",
-      ),
+          'Error general al hacer toggle de WEIGHT CATEGORY Favoritos ❤️❌'
+      )
     );
   }
 };
-
-
 
 //! ------------------- ADD FOLLOW --------------------
 const addFollow = async (req, res, next) => {
@@ -1791,13 +1800,13 @@ const addFollow = async (req, res, next) => {
           });
         } catch (error) {
           return res.status(404).json({
-            error: "Error al unfollow del Usuario Seguido ❌",
+            error: 'Error al unfollow del Usuario Seguido ❌',
             message: error.message,
           });
         }
       } catch (error) {
         return res.status(404).json({
-          message: "Error al unfollow del User ❌",
+          message: 'Error al unfollow del User ❌',
           error: error.message,
         });
       }
@@ -1823,13 +1832,13 @@ const addFollow = async (req, res, next) => {
           });
         } catch (error) {
           return res.status(404).json({
-            error: "Error al follow del Usuario Seguido ❌",
+            error: 'Error al follow del Usuario Seguido ❌',
             message: error.message,
           });
         }
       } catch (error) {
         return res.status(404).json({
-          message: "Error al follow del User ❌",
+          message: 'Error al follow del User ❌',
           error: error.message,
         });
       }
@@ -1838,8 +1847,8 @@ const addFollow = async (req, res, next) => {
     return next(
       setError(
         500,
-        error.message || "Error general al hacer toggle de Follow ❤️❌",
-      ),
+        error.message || 'Error general al hacer toggle de Follow ❤️❌'
+      )
     );
   }
 };
@@ -1856,21 +1865,21 @@ const getFavTeams = async (req, res, next) => {
       .json(
         showTeams.length > 0
           ? showTeams
-          : "No se han encontrado equipos favoritos en el usuario ❌",
+          : 'No se han encontrado equipos favoritos en el usuario ❌'
       ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
   } catch (error) {
     return next(
       setError(
         500,
-        error.message || "Error general al buscar Equipos Favoritos ❤️❌",
-      ),
+        error.message || 'Error general al buscar Equipos Favoritos ❤️❌'
+      )
     );
   }
 };
 
 //! ------------------- GET FAV PLAYERS ----------------------
 const getFavPlayers = async (req, res, next) => {
-  console.log("HE ENTRADDDDOOOOO")
+  console.log('HE ENTRADDDDOOOOO');
   try {
     const { id } = req.params; //?----------------------------------------- id del user por el param, vamos a buscar los favplayers de este user
     const userById = await User.findById(id); //?------------------------ encontramos el user por el id
@@ -1881,24 +1890,22 @@ const getFavPlayers = async (req, res, next) => {
       .json(
         showPlayers.length > 0
           ? showPlayers
-          : "No se han encontrado jugadores favoritos en el usuario ❌",
+          : 'No se han encontrado jugadores favoritos en el usuario ❌'
       ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
   } catch (error) {
     return next(
       setError(
         500,
         error.message ||
-          "Error general al buscar Jugadores Favoritos en el Usuario ❤️❌",
-      ),
+          'Error general al buscar Jugadores Favoritos en el Usuario ❤️❌'
+      )
     );
   }
 };
 
-
-
 //! ------------------- GET FAV RIDER ----------------------
 const getFavRiders = async (req, res, next) => {
-  console.log("HE ENTRADDDDOOOOO")
+  console.log('HE ENTRADDDDOOOOO');
   try {
     const { id } = req.params; //?----------------------------------------- id del user por el param, vamos a buscar los fav riders de este user
     const userById = await User.findById(id); //?------------------------ encontramos el user por el id
@@ -1909,22 +1916,22 @@ const getFavRiders = async (req, res, next) => {
       .json(
         showRiders.length > 0
           ? showRiders
-          : "No se han encontrado riders favoritos en el usuario ❌",
+          : 'No se han encontrado riders favoritos en el usuario ❌'
       ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
   } catch (error) {
     return next(
       setError(
         500,
         error.message ||
-          "Error general al buscar riders Favoritos en el Usuario ❤️❌",
-      ),
+          'Error general al buscar riders Favoritos en el Usuario ❤️❌'
+      )
     );
   }
 };
 
 //! ------------------- GET FAV CIRCUIT ----------------------
 const getFavCircuits = async (req, res, next) => {
-  console.log("HE ENTRADDDDOOOOO")
+  console.log('HE ENTRADDDDOOOOO');
   try {
     const { id } = req.params; //?----------------------------------------- id del user por el param, vamos a buscar los fav circuits de este user
     const userById = await User.findById(id); //?------------------------ encontramos el user por el id
@@ -1935,22 +1942,22 @@ const getFavCircuits = async (req, res, next) => {
       .json(
         showCircuits.length > 0
           ? showCircuits
-          : "No se han encontrado circuits favoritos en el usuario ❌",
+          : 'No se han encontrado circuits favoritos en el usuario ❌'
       ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
   } catch (error) {
     return next(
       setError(
         500,
         error.message ||
-          "Error general al buscar circuits Favoritos en el Usuario ❤️❌",
-      ),
+          'Error general al buscar circuits Favoritos en el Usuario ❤️❌'
+      )
     );
   }
 };
 
 //! ------------------- GET FAV PODIUM ----------------------
 const getFavPodiums = async (req, res, next) => {
-  console.log("HE ENTRADDDDOOOOO")
+  console.log('HE ENTRADDDDOOOOO');
   try {
     const { id } = req.params; //?----------------------------------------- id del user por el param, vamos a buscar los fav podiums de este user
     const userById = await User.findById(id); //?------------------------ encontramos el user por el id
@@ -1961,22 +1968,22 @@ const getFavPodiums = async (req, res, next) => {
       .json(
         showPodiums.length > 0
           ? showPodiums
-          : "No se han encontrado podiums favoritos en el usuario ❌",
+          : 'No se han encontrado podiums favoritos en el usuario ❌'
       ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
   } catch (error) {
     return next(
       setError(
         500,
         error.message ||
-          "Error general al buscar podiums Favoritos en el Usuario ❤️❌",
-      ),
+          'Error general al buscar podiums Favoritos en el Usuario ❤️❌'
+      )
     );
   }
 };
 
 //! ------------------- GET FAV LIFTER ----------------------
 const getFavLifters = async (req, res, next) => {
-  console.log("HE ENTRADDDDOOOOO")
+  console.log('HE ENTRADDDDOOOOO');
   try {
     const { id } = req.params; //?----------------------------------------- id del user por el param, vamos a buscar los fav lifters de este user
     const userById = await User.findById(id); //?------------------------ encontramos el user por el id
@@ -1987,46 +1994,46 @@ const getFavLifters = async (req, res, next) => {
       .json(
         showLifters.length > 0
           ? showLifters
-          : "No se han encontrado lifters favoritos en el usuario ❌",
+          : 'No se han encontrado lifters favoritos en el usuario ❌'
       ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
   } catch (error) {
     return next(
       setError(
         500,
         error.message ||
-          "Error general al buscar lifters Favoritos en el Usuario ❤️❌",
-      ),
+          'Error general al buscar lifters Favoritos en el Usuario ❤️❌'
+      )
     );
   }
 };
 
 //! ------------------- GET FAV WEIGHT CATEGORY ----------------------
 const getFavWeightCategory = async (req, res, next) => {
-  console.log("HE ENTRADDDDOOOOO")
+  console.log('HE ENTRADDDDOOOOO');
   try {
     const { id } = req.params; //?----------------------------------------- id del user por el param, vamos a buscar los fav weight categories de este user
     const userById = await User.findById(id); //?------------------------ encontramos el user por el id
     const usersFavWeightCategories = userById.favWeightCategories; //?--------------------- guardamos en variable los weight categories favoritos encontrando su direccion
-    const showWeightCategories = await WeightCategory.find({ _id: usersFavWeightCategories }); //? -- le decimos que nos muestre los modelos de rider que tengan los id que hemos encontrado en el usuario del param
+    const showWeightCategories = await WeightCategory.find({
+      _id: usersFavWeightCategories,
+    }); //? -- le decimos que nos muestre los modelos de rider que tengan los id que hemos encontrado en el usuario del param
     return res
       .status(showWeightCategories.length > 0 ? 200 : 404)
       .json(
         showWeightCategories.length > 0
           ? showWeightCategories
-          : "No se han encontrado weight categories favoritos en el usuario ❌",
+          : 'No se han encontrado weight categories favoritos en el usuario ❌'
       ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
   } catch (error) {
     return next(
       setError(
         500,
         error.message ||
-          "Error general al buscar weight categories Favoritos en el Usuario ❤️❌",
-      ),
+          'Error general al buscar weight categories Favoritos en el Usuario ❤️❌'
+      )
     );
   }
 };
-
-
 
 //! ------------------- GET FOLLOWERS ----------------------
 const getFollowers = async (req, res, next) => {
@@ -2040,15 +2047,14 @@ const getFollowers = async (req, res, next) => {
       .json(
         showFollowers.length > 0
           ? showFollowers
-          : "No se han encontrado seguidores en el usuario ❌",
+          : 'No se han encontrado seguidores en el usuario ❌'
       ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
   } catch (error) {
     return next(
       setError(
         500,
-        error.message ||
-          "Error general al buscar seguidores en el Usuario ❤️❌",
-      ),
+        error.message || 'Error general al buscar seguidores en el Usuario ❤️❌'
+      )
     );
   }
 };
@@ -2065,14 +2071,14 @@ const getFollowed = async (req, res, next) => {
       .json(
         showFollowed.length > 0
           ? showFollowed
-          : "No se han encontrado seguidos en el usuario ❌",
+          : 'No se han encontrado seguidos en el usuario ❌'
       ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
   } catch (error) {
     return next(
       setError(
         500,
-        error.message || "Error general al buscar seguidos en el Usuario ❤️❌",
-      ),
+        error.message || 'Error general al buscar seguidos en el Usuario ❤️❌'
+      )
     );
   }
 };
@@ -2089,15 +2095,15 @@ const getFavElevens = async (req, res, next) => {
       .json(
         showElevens.length > 0
           ? showElevens
-          : "No se han encontrado 11 ideales favoritos en el usuario ❌",
+          : 'No se han encontrado 11 ideales favoritos en el usuario ❌'
       ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
   } catch (error) {
     return next(
       setError(
         500,
         error.message ||
-          "Error general al buscar 11 ideales Favoritos en el Usuario ❤️❌",
-      ),
+          'Error general al buscar 11 ideales Favoritos en el Usuario ❤️❌'
+      )
     );
   }
 };
@@ -2114,15 +2120,15 @@ const getFavComments = async (req, res, next) => {
       .json(
         showComments.length > 0
           ? showComments
-          : "No se han encontrado comentarios favoritos en el usuario ❌",
+          : 'No se han encontrado comentarios favoritos en el usuario ❌'
       ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
   } catch (error) {
     return next(
       setError(
         500,
         error.message ||
-          "Error general al buscar Comentarios Favoritos en el Usuario ❤️❌",
-      ),
+          'Error general al buscar Comentarios Favoritos en el Usuario ❤️❌'
+      )
     );
   }
 };
@@ -2139,15 +2145,15 @@ const getComments = async (req, res, next) => {
       .json(
         showComments.length > 0
           ? showComments
-          : "No se han encontrado comentarios favoritos en el usuario ❌",
+          : 'No se han encontrado comentarios favoritos en el usuario ❌'
       ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
   } catch (error) {
     return next(
       setError(
         500,
         error.message ||
-          "Error general al buscar Comentarios Favoritos en el Usuario ❤️❌",
-      ),
+          'Error general al buscar Comentarios Favoritos en el Usuario ❤️❌'
+      )
     );
   }
 };
