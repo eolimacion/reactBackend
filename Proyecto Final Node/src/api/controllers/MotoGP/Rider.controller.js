@@ -293,6 +293,11 @@ const deleteRider = async (req, res, next) => {
                     ),
                   );
             }
+            const findByIdRider = await Rider.findById(id); //? hemos encontrado este jugador? no debería existir porque lo hemos eliminado al ppio
+      return res.status(findByIdRider ? 404 : 200).json({
+        //? si se encuentra hay un error, porque no se ha eliminado
+        deleteTest: findByIdRider ? false : true, //? si existe, el test ha dado fallo y si no existe ha aprobado el test
+      });
         }else {
             return res.status(404).json("este rider no existe ❌")
         }
