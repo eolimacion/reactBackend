@@ -114,11 +114,12 @@ const getLifterByGL = async (req, res, next) => {
 const addAndRemoveCategoryById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const categoryId = req.body.id;
+    const {categoryId} = req.body;
+    console.log(id)
     console.log(categoryId);
     const lifterToUpdate = await Lifter.findById(id);
     if (lifterToUpdate) {
-      console.log('Hay cancion');
+      console.log('Hay lifter');
       try {
         if (lifterToUpdate.weightCategory.includes(categoryId)) {
           try {
@@ -134,7 +135,7 @@ const addAndRemoveCategoryById = async (req, res, next) => {
                   await Lifter.findById(id).populate('weightCategory'),
               });
             } catch (error) {
-              return res.status(404).json('Error pulling lifter.');
+              return res.status(404).json(error.message);
             }
           } catch (error) {
             return res.status(404).json('Error pulling category.');
@@ -153,10 +154,10 @@ const addAndRemoveCategoryById = async (req, res, next) => {
                   await Lifter.findById(id).populate('weightCategory'),
               });
             } catch (error) {
-              return res.status(404).json('Error pushing lifters.');
+              return res.status(404).json("hola");
             }
           } catch (error) {
-            return res.status(404).json('Error pushing categories.');
+            return res.status(404).json(error.message);
           }
         }
       } catch (error) {
