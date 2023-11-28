@@ -488,6 +488,105 @@ const averageStats = async (req, res, next) => {
       );
     }
   };
+
+  // ------------- TOGGLE CIRCUIT-RIDERS ----------------
+
+  const toggleRider = async (req, res, next) => {
+    try {
+      const { id } = req.params; //? ---------------------------- obtenemos el id del equipo que queremos cambiar
+      const { riders } = req.body; //? ------------------------- enviaremos esto por el req.body "12412242253,12535222232,12523266346", que son los id de los jugadores del equipo
+      const circuitById = await Circuit.findById(id); //? ----------- guardamos en variable el equipo buscado por id
+      if (circuitById) {
+        //? ------------------------------------- si equpio existe:
+        const arrayIdRiders = riders.split(","); //? ------- los id de los riders que metemos en el body (4a linea funcion) las metemos en un array y las separamos por comas
+        // arrayIdPlayers.forEach(async (player) => {
+        //     const playerExist = await Player.findById(player)
+        //     if (!playerExist) {
+        //         return res.status(404).json(`El jugador con id ${player} no existe`) //! ERRORRR PREGUNTAR
+        // }})
+        Promise.all([
+          arrayIdRiders.forEach(async (rider) => {
+            //? ------ recorremos el array que hemos creado lleno de riders
+            if (circuitById.riders.includes(rider)) {
+              //?- si el rider ya está dentro:
+              console.log("Lo incluyo");
+              //todo ---------- SACAMOS - $PULL ------------- !// (sacamos el jugador del equipo (está dentro de un array en forma de id, y sacamos este id))
+              try {
+                await Circuit.findByIdAndUpdate(id, {
+                  $pull: { riders: rider }, //? -------------- dentro de la clave players me vas a sacar el id del elemento que estoy recorriendo (player)
+                });
+  
+                try {
+                  //? ------------------- ahora ya hemos sacado el jugador del equipo, ahora SACAMOS EL EQUIPO DEL ELEMENTO JUGADOR --> elementos relacionados entre sí (si uno no tiene el otro, el otro no tiene uno)
+                  await Rider.findByIdAndUpdate(rider, {
+                    $pull: { circuits: id }, //? -------------- hemos sacado el id del equipo dentro del elemento jugador (para que si messi no está en fcb, fcb no esté en messi)
+                  });
+                } catch (error) {
+                  return next(
+                    setError(
+                      500,
+                      error.message ||
+                        "Error al quitar el circuit, del rider ❌",
+                    ),
+                  );
+                }
+              } catch (error) {
+                return next(
+                  setError(
+                    500,
+                    error.message || "Error al quitar el rider, del circuit ❌",
+                  ),
+                );
+              }
+            } else {
+              //todo ---------- METEMOS - $PUSH ------------- !// (metemos el jugador en el equipo (dentro de un array en forma de id, metemos este id))
+              try {
+                await Circuit.findByIdAndUpdate(id, {
+                  $push: { riders: rider }, //? -------------- dentro de la clave players (de Team) me vas a añadir el id del elemento que estoy recorriendo (player)
+                });
+  
+                try {
+                  //? ------------------- ahora ya hemos metido el jugador al equipo, ahora METEMOS EL EQUIPO EN EL ELEMENTO JUGADOR --> elementos relacionados entre sí (si uno no tiene el otro, el otro no tiene uno)
+                  await Rider.findByIdAndUpdate(rider, {
+                    $push: { circuits: id }, //? -------------- hemos metido el id del equipo dentro del elemento jugador (para que si messi está en fcb, fcb esté en messi)
+                  });
+                } catch (error) {
+                  return next(
+                    setError(
+                      500,
+                      error.message || "Error al añadir el circuit, al rider ❌",
+                    ),
+                  );
+                }
+              } catch (error) {
+                return next(
+                  setError(
+                    500,
+                    error.message || "Error al añadir el rider, al circuit ❌",
+                  ),
+                );
+              }
+            }
+          }),
+        ]).then(async () => {
+          console.log("estoy en el .then");
+          return res.status(200).json({
+            dataUpdate: await Circuit.findById(id), //.populate("players"), //? mostramos el equipo que ya tiene los cambios hechos / el populate es para que no solo muestre los id
+          });
+        });
+      } else {
+        res.status(404).json("este circuit no existe ❌");
+      }
+    } catch (error) {
+      return next(
+        setError(
+          500,
+          error.message ||
+            "Error general al añadir/quitar riders, al circuit ❌",
+        ),
+      );
+    }
+  };
   
 module.exports = {
   //! MAIN
@@ -502,4 +601,5 @@ module.exports = {
   filterGeneralNum,
   filterAndSort,
   averageStats,
+  toggleRider,
 };
