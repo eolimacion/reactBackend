@@ -128,7 +128,7 @@ const update = async (req, res) => {
                 name: req.body?.name ? req.body.name : riderById.name,
                 number: req.body?.number ? req.body.number : riderById.number,
                 age: req.body?.age ? req.body.age : riderById.age,
-                nationality: req.body?.nationqality ? req.body?.nationality : riderById.req.body?.nationality ,
+                nationality: req.body?.nationality ? req.body?.nationality : riderById.nationality,
                 rating: req.body?.rating ? req.body.rating : riderById.rating,
                 ranking: req.body?.ranking ? req.body?.ranking : riderById.ranking,
                 points: req.body?.points ? req.body?.points : riderById.points,
