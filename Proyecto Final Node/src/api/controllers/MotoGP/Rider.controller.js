@@ -138,8 +138,8 @@ const update = async (req, res) => {
                 team: req.body?.team ? req.body?.team : riderById.team,
                 polesSeason: req.body?.polesSeason ? req.body?.polesSeason : riderById.polesSeason,
                 circuits: req.body?.circuits ? req.body?.circuits : riderById.circuits,
-                likes: playerById.likes,
-                selected: playerById.selected,
+                likes: riderById.likes,
+                selected: riderById.selected,
             }
 
             try {
