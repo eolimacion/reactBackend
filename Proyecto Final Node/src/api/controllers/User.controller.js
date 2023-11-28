@@ -137,7 +137,7 @@ const registerEstado = async (req, res, next) => {
     const userExist = await User.findOne(
       //? estamos buscando si ya hay un usuario con este email o con este nombre para que si ya existe yo no pueda registrarlo. el findOne te encuentra un solo elemento, el find te da un array con todas las coincidencias con la condición que tu le des
       { email: req.body.email }, //? las condiciones que tiene que cumplir el supuesto usuario si ya existe
-      { name: req.body.name },
+      { name: req.body.name }
     );
     if (!userExist) {
       const newUser = new User({ ...req.body, confirmationCode }); //? ---- creamos una copia con la info que nos mandan y con el confirmation code que nos da el model de user

@@ -26,6 +26,6 @@ WeightCategoryRoutes.get('/getLifters/:id', lifterByCategory)
 WeightCategoryRoutes.post('/' , [isAuthAdmin], createWeightCategory)
 WeightCategoryRoutes.patch('/update/:id', [isAuthAdmin], updateWeightCategory)
 WeightCategoryRoutes.patch('/addLifters/:id', [isAuthAdmin], toggleLifter)
-WeightCategoryRoutes.delete('/', [isAuthAdmin], deleteWeightCategory)
+WeightCategoryRoutes.delete('/:id', [isAuthAdmin], deleteWeightCategory)
 
 module.exports = WeightCategoryRoutes
