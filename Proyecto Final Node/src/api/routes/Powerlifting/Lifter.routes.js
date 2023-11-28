@@ -26,7 +26,7 @@ LifterRoutes.get('/getByGL', getLifterByGL)
 LifterRoutes.post('/', [isAuthAdmin], createLifter)
 LifterRoutes.delete('/', [isAuthAdmin], deleteLifter)
 LifterRoutes.patch('/update', [isAuthAdmin], updateLifter)
-LifterRoutes.patch('/addWeightCatefory/:id', [isAuthAdmin], addAndRemoveCategoryById)
+LifterRoutes.patch('/addWeightCategory/:id', [isAuthAdmin], addAndRemoveCategoryById)
 
 
 
