@@ -61,6 +61,7 @@ UserRoutes.post('/login', login);
 UserRoutes.post('/login/autologin', autologin);
 UserRoutes.post('/check', checkNewUser);
 UserRoutes.patch('/forgotpassword/forgotpassword', changePassword);
+UserRoutes.post('/resend', resendCode);
 
 //! ----> Controladores autenticados
 UserRoutes.get('/pruebas', [isAuth], exampleAuth);
