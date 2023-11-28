@@ -245,19 +245,6 @@ const deleteRider = async (req, res, next) => {
                                         {thirdPlace: id},
                                         {$pull: {thirdPlace: id}},
                                     )
-                                    try {
-                                      await Circuit.updateMany(
-                                        {riders: id},
-                                        {$pull: {riders: id}}
-                                      )
-                                    } catch (error) {
-                                      return next(
-                                        setError(
-                                          500,
-                                          /* error.message || */ "Error al eliminar al rider del circuit ❌",
-                                        ),
-                                      );
-                                    }
                                 } catch (error) {
                                     return next(
                                         setError(

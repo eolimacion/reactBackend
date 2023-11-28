@@ -8,7 +8,7 @@ const CircuitSchema = new Schema(
     capacity: { type: Number, required: true },
     topSpeed: { type: Number, required: true },
     image: { type: String, required: false },
-    riders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Rider" }],
+    
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
     selected: [{ type: mongoose.Schema.Types.ObjectId, ref: "Podium" }],
     fastestLap: [{ type: mongoose.Schema.Types.ObjectId, ref: "Rider" }, { type: Number, required: true }, { type: Number, required: true }],
