@@ -60,6 +60,25 @@ const getAllLifters = async (req, res) => {
   }
 };
 
+//?---------------------------------------------------------------------------------
+//! ------------------------- GET LIFTERS BY CATEGORY ------------------------------
+//?---------------------------------------------------------------------------------
+
+const lifterByCategory = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const liftersByCategory = await Lifter.find({
+      weightCategory: { $in: id },
+      /*  --EX  En este caso, $IN lo que hace es buscar que objetos
+          --EX cumplen con la categoria que tenemos. Es decir, 
+          --EX encuentra los lifters que IN weightCategory tengan category  */
+    });
+    return res.status(200).json(liftersByCategory);
+  } catch (error) {
+    return next(setError(500, error.message || 'Error getting'));
+  }
+};
+
 //<!--SEC                                      GET BY LIFTER NAME                                        -->
 
 const getByLifterName = async (req, res) => {
@@ -106,16 +125,13 @@ const getLifterByGL = async (req, res, next) => {
   }
 };
 
-
-
-
 //<!--SEC                                  TOGGLE CATEGORY FOR LIFTER                                    -->
 
 const addAndRemoveCategoryById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const {categoryId} = req.body;
-    console.log(id)
+    const { categoryId } = req.body;
+    console.log(id);
     console.log(categoryId);
     const lifterToUpdate = await Lifter.findById(id);
     if (lifterToUpdate) {
@@ -154,7 +170,7 @@ const addAndRemoveCategoryById = async (req, res, next) => {
                   await Lifter.findById(id).populate('weightCategory'),
               });
             } catch (error) {
-              return res.status(404).json("hola");
+              return res.status(404).json('hola');
             }
           } catch (error) {
             return res.status(404).json(error.message);
@@ -295,4 +311,5 @@ module.exports = {
   addAndRemoveCategoryById,
   updateLifter,
   deleteLifter,
+  lifterByCategory,
 };

@@ -74,25 +74,6 @@ const getWeightCategoryByGender = async (req, res, next) => {
   }
 };
 
-//?---------------------------------------------------------------------------------
-//! ------------------------- GET LIFTERS BY CATEGORY ------------------------------
-//?---------------------------------------------------------------------------------
-
-const lifterByCategory = async (req, res, next) => {
-  const { category } = req.body;
-  try {
-    const liftersByCategory = await Lifter.find({
-      weightCategory: { $in: category },
-      /*  --EX el AND admite un array de condiciones por las que tiene que buscar en la base de datos. 
-          --EX en cada objeto le pongo la condicion deseada. En este caso, $IN lo que hace es buscar que objetos
-          --EX cumplen con que genres incluya el objeto del array que tenemos, y si tuvieramos varios, devuelve todos los
-          --EX que cumplen cualquiera de las dos condiciones. $SIZE determina la longitud del array de genres, por lo que te devuelve
-          --EX todas las canciones que tengan solo un genero-->*/
-    });
-    return res.status(200).json(liftersByCategory);
-  } catch (error) {}
-};
-
 //*    ----------------------------------------------------------------------------------
 //todo ------------------------------- CON AUTH -----------------------------------------
 //todo -------------------------------DE ADMIN  -----------------------------------------
@@ -317,6 +298,5 @@ module.exports = {
   updateWeightCategory,
   toggleLifter,
   getWeightCategoryByGender,
-  lifterByCategory,
   deleteWeightCategory,
 };
