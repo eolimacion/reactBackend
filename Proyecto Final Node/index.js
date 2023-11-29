@@ -4,6 +4,14 @@ const express = require("express")
 const dotenv = require("dotenv");
 dotenv.config();
 
+//?--------------------- SEEDS -------------------------
+
+// const seedLifters = require('./src/helpers/lifterSeed'); //para sembrar unas cuantas canciones y Albumes
+// seedLifters();
+
+
+
+
 //! 2. ------- TRAEMOS CONEXION DE LA DB (DATABASE) -----> EJECUTAMOS LA FUNCIÓN
 const { connect } = require("./src/utils/db");
 connect();

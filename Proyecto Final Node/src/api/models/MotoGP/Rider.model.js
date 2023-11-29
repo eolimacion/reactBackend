@@ -6,8 +6,8 @@ const RiderSchema = new Schema(
     
     number: { type: Number, required: true },
     nationality: { type: String, required: true },
-    age: { type: Number, required: true },
-    rating: { type: Number, required: true },
+    age: { type: Number, required: false },
+    rating: { type: Number, required: false },
     ranking: { type: Number, required: true },
     points:{ type: Number, required: true },
     image: { type: String, required: false },
