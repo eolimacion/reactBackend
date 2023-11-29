@@ -401,8 +401,9 @@ const resendCode = async (req, res, next) => {
       },
     });
 
-    const userExist = User.findOne({ email: req.body.email }); //? comprobamos que el user existe gracias al req.body.email ya que lo checkeamos buscandolo en la DB
+    const userExist = await User.findOne({ email: req.body.email }); //? comprobamos que el user existe gracias al req.body.email ya que lo checkeamos buscandolo en la DB
     if (userExist) {
+      console.log(userExist)
       const mailOptions = {
         //? ------------------------------ seteamos las opciones del email que se envía
         from: email,
