@@ -63,7 +63,6 @@ const UserSchema = new mongoose.Schema(
     favWeightCategories: [
       { type: mongoose.Schema.Types.ObjectId, ref: 'WeightCategory' },
     ], //! aún no está creado el modelo
-
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
     favComments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],

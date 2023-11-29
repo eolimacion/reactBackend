@@ -144,7 +144,7 @@ const registerEstado = async (req, res, next) => {
       req.file //? ------------------------------------------------------- si hay imagen, pues la actualizamos por la que dan, si no, la default será el url
         ? (newUser.image = req.file.path)
         : (newUser.image =
-            'https://res-console.cloudinary.com/dx2arqne6/media_explorer_thumbnails/df958de5eb6e17c7b5218b715563d36c/detailed');
+            'https://www.google.com/url?sa=i&url=https%3A%2F%2Fen.m.wikipedia.org%2Fwiki%2FFile%3ASample_User_Icon.png&psig=AOvVaw3YmNCOpmL7ukfzebAzwQA7&ust=1701281877889000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCLCF3IGn54IDFQAAAAAdAAAAABAJ');
 
       try {
         const savedUser = await newUser.save(); //? --------------------- guardamos el user con la info ya metida (6 lineas antes)
@@ -208,7 +208,7 @@ const registerWithRedirect = async (req, res, next) => {
       req.file //? ------------------------------------------------------- si hay imagen, pues la actualizamos por la que dan, si no, la default será el url
         ? (newUser.image = req.file.path)
         : (newUser.image =
-            'https://res-console.cloudinary.com/dx2arqne6/media_explorer_thumbnails/df958de5eb6e17c7b5218b715563d36c/detailed');
+            'https://www.google.com/url?sa=i&url=https%3A%2F%2Fen.m.wikipedia.org%2Fwiki%2FFile%3ASample_User_Icon.png&psig=AOvVaw3YmNCOpmL7ukfzebAzwQA7&ust=1701281877889000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCLCF3IGn54IDFQAAAAAdAAAAABAJ');
 
       try {
         const savedUser = await newUser.save(); //? --------------------- guardamos el user con la info ya metida (6 lineas antes)
@@ -294,7 +294,7 @@ const sendCode = async (req, res, next) => {
 const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const userById = await User.findById(id); //? cogemos el elemento (usuario) identificandolo a través del id, que es único
+    const userById = await User.findById(id).populate("favPlayers favTeams favElevens favRiders favCircuits favPodiums favLifters favWeightCategories comments favComments followers"); //? cogemos el elemento (usuario) identificandolo a través del id, que es único
     return res
       .status(userById ? 200 : 404)
       .json(
