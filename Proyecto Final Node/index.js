@@ -10,6 +10,10 @@ dotenv.config();
 // seedLifters();
 
 
+// const seedRider = require ('./src/helpers/riderSeed')
+
+// seedRider()
+
 
 
 //! 2. ------- TRAEMOS CONEXION DE LA DB (DATABASE) -----> EJECUTAMOS LA FUNCIÓN

@@ -10,7 +10,8 @@ const riderData = [
           victoriesSeason: "7",
           victoriesCarrer: "28",
           championshipsCarrer: "3",
-          polesSeason: "25"
+          polesSeason: "25",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266045/YW9dAEBJ_in1bim.png"
         },
         {
           name: "Johann Zarco",
@@ -23,7 +24,8 @@ const riderData = [
           victoriesSeason: "1",
           victoriesCarrer: "17",
           championshipsCarrer: "2",
-          polesSeason: "27"
+          polesSeason: "27",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266043/05_Johann_Zarco_DS_5294_bcfrms.png"
         },
         {
           name: "Luca Marini",
@@ -36,7 +38,8 @@ const riderData = [
           victoriesSeason: "0",
           victoriesCarrer: "6",
           championshipsCarrer: "0",
-          polesSeason: "7"
+          polesSeason: "7",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266043/10_Luca_Marini_DS_5278_f5xv3n.png"
         },
         {
           name: "Maverick Viñales",
@@ -49,7 +52,8 @@ const riderData = [
           victoriesSeason: "0",
           victoriesCarrer: "25",
           championshipsCarrer: "1",
-          polesSeason: "25"
+          polesSeason: "25",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266044/niODwVfs_uialkc.png"
         },
         {
           name: "Fabio Quartararo",
@@ -62,7 +66,8 @@ const riderData = [
           victoriesSeason: "0",
           victoriesCarrer: "12",
           championshipsCarrer: "1",
-          polesSeason: "19"
+          polesSeason: "19",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266044/Fabioquartararo-1-_vjzkiu.png"
         },
         {
           name: "Franco Morbidelli",
@@ -75,7 +80,8 @@ const riderData = [
           victoriesSeason: "0",
           victoriesCarrer: "11",
           championshipsCarrer: "1",
-          polesSeason: "8"
+          polesSeason: "8",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266043/21_Franco_Morbidelli_DS_5306_zbu272.png"
         },
         {
           name: "Enea Bastianini",
@@ -101,7 +107,8 @@ const riderData = [
           victoriesSeason: "0",
           victoriesCarrer: "10",
           championshipsCarrer: "0",
-          polesSeason: "13"
+          polesSeason: "13",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266044/p6MYq6ml_tiigqu.png"
         },
         {
           name: "Takaaki Nakagami",
@@ -127,7 +134,8 @@ const riderData = [
           victoriesSeason: "7",
           victoriesCarrer: "16",
           championshipsCarrer: "2",
-          polesSeason: "5"
+          polesSeason: "5",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266044/31_Pedro_Acosta_DS_5257_tdqfmo.png"
         },
         {
           name: "Brad Binder",
@@ -140,7 +148,8 @@ const riderData = [
           victoriesSeason: "0",
           victoriesCarrer: "17",
           championshipsCarrer: "1",
-          polesSeason: "7"
+          polesSeason: "7",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266045/WBIOoIRV_vbhngn.png"
         },
         {
           name: "Joan Mir",
@@ -153,7 +162,8 @@ const riderData = [
           victoriesSeason: "0",
           victoriesCarrer: "12",
           championshipsCarrer: "2",
-          polesSeason: "2"
+          polesSeason: "2",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266044/FU25ODeO_siuraj.png"
         },
         {
           name: "Augusto Fernandez",
@@ -166,7 +176,8 @@ const riderData = [
           victoriesSeason: "0",
           victoriesCarrer: "7",
           championshipsCarrer: "1",
-          polesSeason: "3"
+          polesSeason: "3",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266045/wXXlUcOg_budshw.png"
         },
         {
           name: "Aleix Espargaro",
@@ -179,7 +190,8 @@ const riderData = [
           victoriesSeason: "2",
           victoriesCarrer: "3",
           championshipsCarrer: "0",
-          polesSeason: "5"
+          polesSeason: "5",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266044/ucV0oYYh_xm5vtw.png"
         },
         {
           name: "Alex Rins",
@@ -192,7 +204,8 @@ const riderData = [
           victoriesSeason: "1",
           victoriesCarrer: "18",
           championshipsCarrer: "0",
-          polesSeason: "17"
+          polesSeason: "17",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266043/42_Alex_Rins_DS_6238_zhvjfs.png"
         },
         {
           name: "Jack Miller",
@@ -205,7 +218,8 @@ const riderData = [
           victoriesSeason: "0",
           victoriesCarrer: "10",
           championshipsCarrer: "0",
-          polesSeason: "10"
+          polesSeason: "10",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266043/22xRcZYS_jkaoh4.png"
         },
         {
           name: "Fabio Di Giannantonio",
@@ -218,7 +232,8 @@ const riderData = [
           victoriesSeason: "1",
           victoriesCarrer: "4",
           championshipsCarrer: "0",
-          polesSeason: "2"
+          polesSeason: "2",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266043/49_Fabio_Di_Giannantonio_DS_5323_cmpwax.png"
         },
         {
           name: "Marco Bezzecchi",
@@ -231,7 +246,8 @@ const riderData = [
           victoriesSeason: "3",
           victoriesCarrer: "9",
           championshipsCarrer: "0",
-          polesSeason: "8"
+          polesSeason: "8",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266044/L7mD2P5e_dntsel.png"
         },
         {
           name: "Alex Marquez",
@@ -244,7 +260,8 @@ const riderData = [
           victoriesSeason: "0",
           victoriesCarrer: "12",
           championshipsCarrer: "2",
-          polesSeason: "16"
+          polesSeason: "16",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266044/qhUTaqai_uacsfn.png"
         },
         {
           name: "Miguel Oliveira",
@@ -256,8 +273,9 @@ const riderData = [
           team: "Aprilia Racing Independent",
           victoriesSeason: "0",
           victoriesCarrer: "17",
-          championshipsCarrer: "-",
-          polesSeason: "5"
+          championshipsCarrer: "0",
+          polesSeason: "5",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266044/OkorDEXf_uk9hsi.png"
         },
         {
           name: "Jorge Martin",
@@ -270,7 +288,8 @@ const riderData = [
           victoriesSeason: "4",
           victoriesCarrer: "15",
           championshipsCarrer: "1",
-          polesSeason: "34"
+          polesSeason: "34",
+          image: "https://res.cloudinary.com/daxddugwt/image/upload/v1701266045/Yd6Ecyd1_vtaxzr.png"
         },
         {
           name: "Marc Marquez",
@@ -287,3 +306,6 @@ const riderData = [
         }
       
 ]
+
+
+module.exports = riderData
