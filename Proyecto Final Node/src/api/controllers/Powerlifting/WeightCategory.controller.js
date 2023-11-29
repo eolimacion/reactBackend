@@ -105,9 +105,11 @@ const getWeightCategoryByGender = async (req, res, next) => {
 //?---------------------------------------------------------------------------------
 
 const createWeightCategory = async (req, res, next) => {
+  console.log("entroooooooooo")
   try {
     await WeightCategory.syncIndexes();
     const newWeightCategory = new WeightCategory(req.body);
+    console.log(newWeightCategory)
 
     if (enumWeightCatOk(req.body.weight)) {
       const saveWeightCategory = newWeightCategory.save();

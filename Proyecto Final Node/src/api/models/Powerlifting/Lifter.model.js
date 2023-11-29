@@ -16,7 +16,7 @@ const LifterSchema = new mongoose.Schema(
       unique: false,
       trim: true,
     },
-    birthYear: { type: Number, required: true },
+    birthYear: { type: String, required: true },
     benchPress: { type: Number, required: true },
     squat: { type: Number, required: true },
     deadlift: { type: Number, required: true },
