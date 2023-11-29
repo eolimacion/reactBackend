@@ -14,6 +14,7 @@ const create = async (req, res, next) => {
     const body = req.body;
     const owner = req.user._id;
     const userElement = await User.findById(owner);
+    console.log(body, owner)
     if (userElement.yourPodium.length > 0) {
       //? ---------------- si el usuario ya tiene un podium mandar error
       return res
@@ -80,9 +81,8 @@ const create = async (req, res, next) => {
     }
   } catch (error) {
     //? --------------------------------------------- si ha habido un error creando el jugador:
-    return next(
-      setError(500, error.message || "Error general al crear tu podium ❌"),
-    );
+    return next(error.message)
+     
   }
 };
 
