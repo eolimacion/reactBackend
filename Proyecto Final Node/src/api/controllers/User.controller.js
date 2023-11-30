@@ -1984,29 +1984,43 @@ const getFavPodiums = async (req, res, next) => {
   }
 };
 
-//! ------------------- GET FAV LIFTER ----------------------
-const getFavLifters = async (req, res, next) => {
-  console.log('HE ENTRADDDDOOOOO');
+// //! ------------------- GET FAV LIFTER ----------------------
+// const getFavLifters = async (req, res, next) => {
+//   console.log('HE ENTRADDDDOOOOO');
+//   try {
+//     const { id } = req.params; //?----------------------------------------- id del user por el param, vamos a buscar los fav lifters de este user
+//     const userById = await User.findById(id); //?------------------------ encontramos el user por el id
+//     const usersFavLifters = userById.favLifters; //?--------------------- guardamos en variable los lifters favoritos encontrando su direccion
+//     const showLifters = await Lifter.find({ _id: usersFavLifters }); //? -- le decimos que nos muestre los modelos de rider que tengan los id que hemos encontrado en el usuario del param
+//     return res
+//       .status(showLifters.length > 0 ? 200 : 404)
+//       .json(
+//         showLifters.length > 0
+//           ? showLifters
+//           : 'No se han encontrado lifters favoritos en el usuario ❌'
+//       ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
+//   } catch (error) {
+//     return next(
+//       setError(
+//         500,
+//         error.message ||
+//           'Error general al buscar lifters Favoritos en el Usuario ❤️❌'
+//       )
+//     );
+//   }
+// };
+
+const getFavLifters = async (req, res) => {
   try {
-    const { id } = req.params; //?----------------------------------------- id del user por el param, vamos a buscar los fav lifters de este user
-    const userById = await User.findById(id); //?------------------------ encontramos el user por el id
-    const usersFavLifters = userById.favLifters; //?--------------------- guardamos en variable los lifters favoritos encontrando su direccion
-    const showLifters = await Lifter.find({ _id: usersFavLifters }); //? -- le decimos que nos muestre los modelos de rider que tengan los id que hemos encontrado en el usuario del param
-    return res
-      .status(showLifters.length > 0 ? 200 : 404)
-      .json(
-        showLifters.length > 0
-          ? showLifters
-          : 'No se han encontrado lifters favoritos en el usuario ❌'
-      ); //? se podría mirar de hacer que devolviese solo algunas claves, o el nombre, etc...
+    const { id } = req.user;
+    const userById = await User.findById(id).populate('favLifters'); // Populate favAlbums
+    if (userById) {
+      return res.status(200).json(userById.favLifters);
+    } else {
+      return res.status(404).json("That user doesn't exist.");
+    }
   } catch (error) {
-    return next(
-      setError(
-        500,
-        error.message ||
-          'Error general al buscar lifters Favoritos en el Usuario ❤️❌'
-      )
-    );
+    return res.status(404).json(error.message);
   }
 };
 
