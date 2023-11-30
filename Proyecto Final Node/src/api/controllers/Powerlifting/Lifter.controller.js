@@ -32,7 +32,7 @@ const getLifterById = async (req, res) => {
   try {
     const { id } = req.params;
     const lifterById = await Lifter.findById(id).populate(
-      'weightCategory comments likes'
+      'weightCategory comments'
     );
     if (lifterById) {
       return res.status(200).json(lifterById);
@@ -183,6 +183,7 @@ const updateLifter = async (req, res) => {
   try {
     const { id } = req.params;
     const lifterById = await Lifter.findById(id);
+    req.file && (lifterById.image = catchImg)
 
     if (lifterById) {
       const customBody = {
@@ -210,7 +211,7 @@ const updateLifter = async (req, res) => {
 
         const updatedLifter = await Lifter.findById(id);
         const elementUpdate = Object.keys(req.body);
-        let test = {};
+        let test = [];
         elementUpdate.forEach((item) => {
           if (req.body[item] === updatedLifter[item]) {
             test[item] = true;
@@ -218,6 +219,18 @@ const updateLifter = async (req, res) => {
             test[item] = false;
           }
         });
+
+        if (req.file) {
+          //? la imagen va siempre aparte porque va por la request.file
+          updatedLifter.image === catchImg //? si la imagen del user actualizado es igual a la imagen nueva, guardada en el catch
+            ? test.push({
+                //? indicamos que la clave image es true, porque ha sido actualizada
+                image: true,
+              })
+            : test.push({
+                image: false,
+              });
+        }
         // Testeamos genres por separado porque es un array de un enum,
         // entonces lo que hacemos es hacer un forEach sopesando si cada uno
         // de los elementos forma parte del enum, sumando al accumulator si es cierto.

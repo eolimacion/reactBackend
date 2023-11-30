@@ -74,7 +74,7 @@ UserRoutes.patch('/togglePlayer/:idPlayer', [isAuth], addFavPlayer);
 UserRoutes.patch('/toggleRider/:idRider', [isAuth], addFavRider);
 UserRoutes.patch('/toggleCircuit/:idCircuit', [isAuth], addFavCircuit);
 UserRoutes.patch('/togglePodium/:idPodium', [isAuth], addFavPodium);
-UserRoutes.patch('/toggleLifter/:idLifter', [isAuth], addFavLifter);
+UserRoutes.patch('/lifter/toggleLifter/:idLifter', [isAuth], addFavLifter);
 UserRoutes.patch('/toggleWeightCategory/:idWeightCategory', [isAuth], addFavWeightCategory);
 UserRoutes.patch('/toggleComment/:idComment', [isAuth], addFavComment);
 UserRoutes.patch('/toggleFollow/:idUser', [isAuth], addFollow);

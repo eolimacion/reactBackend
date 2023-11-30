@@ -9,6 +9,11 @@ const LifterSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+    image:{
+      type: String,
+      required: false,
+      trim: true,
+    },
     age: { type: Number, required: false },
     gender: {
       type: String,
