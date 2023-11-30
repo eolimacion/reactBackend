@@ -6,6 +6,7 @@ const User = require("../models/User.model");
 
 //! ---------------- CREATE -----------------
 const create = async (req, res, next) => {
+  console.log("HE ENTRADO EN CREATE ELEVEN")
   //? para crear con id en vez de name, solo hay que cambiar el String, por ObjectId en el modelo, y aquí en vez de Player.findOne({name: body[propiedad]}) se haría con Player.findById(body[propiedad])
   try {
     await Eleven.syncIndexes(); //? --------------------------- ACTUALIZAMOS INDEXES, que son aquellas claves del objeto que son únicas. Lo hacemos para asegurarnos que tenemos la última versión en caso de haber sido modificados los modelos

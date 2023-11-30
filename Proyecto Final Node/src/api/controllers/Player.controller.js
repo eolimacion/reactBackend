@@ -71,16 +71,17 @@ const getById = async (req, res, next) => {
 
 //! --------------- GET ALL ----------------
 const getAll = async (req, res, next) => {
+  console.log("entro en getallplayers")
   try {
     const allPlayers = await Player.find().populate("team likes selected"); //? ------------- el find() nos devuelve un array con todos los elementos de la colección del BackEnd, es decir, TODOS LOS JUGADORES
     if (allPlayers.length > 0) {
-      //? --------------------------- SI HAY MOTOS:
+      //? --------------------------- SI HAY PLAYERS:
       console.log(allPlayers)
       return res.status(200).json(allPlayers);
     } else {
       return res
         .status(404)
-        .json("no se han encontrado motos en la colección (BackEnd) ❌");
+        .json("no se han encontrado jugadores en la colección (BackEnd) ❌");
     }
   } catch (error) {
     return next(setError(500, error.message || "Error general al GET ALL ❌"));
@@ -89,6 +90,7 @@ const getAll = async (req, res, next) => {
 
 //! --------------- GET by NAME ----------------
 const getByName = async (req, res, next) => {
+  console.log("entro al get player by name")
   try {
     const { name } = req.params;
     console.log(name);
@@ -96,7 +98,7 @@ const getByName = async (req, res, next) => {
       "team likes selected",
     );
     console.log(playerByName);
-    if (playerByName.length > 0) {
+    if (playerByName[0]) {
       console.log(playerByName)
       return res.status(200).json(playerByName);
     } else {
