@@ -31,7 +31,9 @@ const createLifter = async (req, res, next) => {
 const getLifterById = async (req, res) => {
   try {
     const { id } = req.params;
-    const lifterById = await Lifter.findById(id);
+    const lifterById = await Lifter.findById(id).populate(
+      'weightCategory comments likes'
+    );
     if (lifterById) {
       return res.status(200).json(lifterById);
     } else {

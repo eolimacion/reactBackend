@@ -23,7 +23,8 @@ const setError = require('../../../helpers/handle-error');
 const getWeightCategoryById = async (req, res) => {
   try {
     const { id } = req.params;
-    const WeightCategoryById = await WeightCategory.findById(id);
+    const WeightCategoryById =
+      await WeightCategory.findById(id).populate('lifters likes');
 
     return res
       .status(WeightCategoryById ? 200 : 404)
@@ -105,11 +106,11 @@ const getWeightCategoryByGender = async (req, res, next) => {
 //?---------------------------------------------------------------------------------
 
 const createWeightCategory = async (req, res, next) => {
-  console.log("entroooooooooo")
+  console.log('entroooooooooo');
   try {
     await WeightCategory.syncIndexes();
     const newWeightCategory = new WeightCategory(req.body);
-    console.log(newWeightCategory)
+    console.log(newWeightCategory);
 
     if (enumWeightCatOk(req.body.weight)) {
       const saveWeightCategory = newWeightCategory.save();

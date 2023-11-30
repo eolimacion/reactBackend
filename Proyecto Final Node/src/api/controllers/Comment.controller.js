@@ -1,9 +1,9 @@
-const setError = require("../../helpers/handle-error");
-const Comment = require("../models/Comment.model");
-const Eleven = require("../models/Eleven.model");
-const Podium = require("../models/MotoGP/Podium.model");
-const Lifter = require("../models/Powerlifting/Lifter.model");
-const User = require("../models/User.model");
+const setError = require('../../helpers/handle-error');
+const Comment = require('../models/Comment.model');
+const Eleven = require('../models/Eleven.model');
+const Podium = require('../models/MotoGP/Podium.model');
+const Lifter = require('../models/Powerlifting/Lifter.model');
+const User = require('../models/User.model');
 
 //! ---------------- CREATE -----------------
 const create = async (req, res, next) => {
@@ -22,22 +22,22 @@ const create = async (req, res, next) => {
     const saveComment = await newComment.save();
     await Eleven.findByIdAndUpdate(
       location, //? ----- hacemos que sea recíproco, y que se cree el comentario en el eleven
-      { $push: { comments: saveComment._id } },
+      { $push: { comments: saveComment._id } }
     );
     await User.findByIdAndUpdate(
       creator, //? ----- hacemos que sea recíproco, y que se cree el comentario en el eleven
-      { $push: { comments: saveComment._id } },
+      { $push: { comments: saveComment._id } }
     );
     return res
       .status(saveComment ? 200 : 404)
-      .json(saveComment ? saveComment : "Error en el guardado del comentario");
+      .json(saveComment ? saveComment : 'Error en el guardado del comentario');
   } catch (error) {
     return next(
-      setError(500, error.message || "Error general al crear tu comentario ❌"),
+      setError(500, error.message || 'Error general al crear tu comentario ❌')
     );
   }
 };
-//! ---------------- CREATE PODIUM -----------------
+//! ---------------- CREATE PODIUM COMMENT -----------------
 const createPodiumComment = async (req, res, next) => {
   try {
     await Comment.syncIndexes();
@@ -54,22 +54,22 @@ const createPodiumComment = async (req, res, next) => {
     const saveComment = await newComment.save();
     await Podium.findByIdAndUpdate(
       locationMoto, //? ----- hacemos que sea recíproco, y que se cree el comentario en el eleven
-      { $push: { comments: saveComment._id } },
+      { $push: { comments: saveComment._id } }
     );
     await User.findByIdAndUpdate(
       creator, //? ----- hacemos que sea recíproco, y que se cree el comentario en el eleven
-      { $push: { comments: saveComment._id } },
+      { $push: { comments: saveComment._id } }
     );
     return res
       .status(saveComment ? 200 : 404)
-      .json(saveComment ? saveComment : "Error en el guardado del comentario");
+      .json(saveComment ? saveComment : 'Error en el guardado del comentario');
   } catch (error) {
     return next(
-      setError(500, error.message || "Error general al crear tu comentario ❌"),
+      setError(500, error.message || 'Error general al crear tu comentario ❌')
     );
   }
 };
-//! ---------------- CREATE PODIUM -----------------
+//! ---------------- CREATE LIFTER COMMENT -----------------
 const createLifterComment = async (req, res, next) => {
   try {
     await Comment.syncIndexes();
@@ -86,18 +86,18 @@ const createLifterComment = async (req, res, next) => {
     const saveComment = await newComment.save();
     await Podium.findByIdAndUpdate(
       locationLifter, //? ----- hacemos que sea recíproco, y que se cree el comentario en el eleven
-      { $push: { comments: saveComment._id } },
+      { $push: { comments: saveComment._id } }
     );
     await User.findByIdAndUpdate(
       creator, //? ----- hacemos que sea recíproco, y que se cree el comentario en el eleven
-      { $push: { comments: saveComment._id } },
+      { $push: { comments: saveComment._id } }
     );
     return res
       .status(saveComment ? 200 : 404)
-      .json(saveComment ? saveComment : "Error en el guardado del comentario");
+      .json(saveComment ? saveComment : 'Error en el guardado del comentario');
   } catch (error) {
     return next(
-      setError(500, error.message || "Error general al crear tu comentario ❌"),
+      setError(500, error.message || 'Error general al crear tu comentario ❌')
     );
   }
 };
@@ -107,21 +107,21 @@ const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const commentById = await Comment.findById(id).populate(
-      "creator location likes",
+      'creator location likes locationMoto locationLifter'
     ); //? cogemos el elemento (eleven) identificandola a través del id, que es único
     return res
       .status(commentById ? 200 : 404)
       .json(
         commentById
           ? commentById
-          : "no se ha encontrado un comentario con ese id ❌",
+          : 'no se ha encontrado un comentario con ese id ❌'
       );
   } catch (error) {
     return next(
       setError(
         500,
-        error.message || "Error general al buscar comentario a través de ID ❌",
-      ),
+        error.message || 'Error general al buscar comentario a través de ID ❌'
+      )
     );
   }
 };
@@ -132,7 +132,7 @@ const getAll = async (req, res, next) => {
     const { location } = req.params;
     const elevenById = await Eleven.findById(location);
     const allComments = await Comment.find({ location: location }).populate(
-      "creator location likes",
+      'creator location likes'
     ); //? ------------- el find() nos devuelve un array con todos los elementos de la colección del BackEnd, es decir, Ttodos los comments que tengan location en el id que hemos puesto
     if (elevenById) {
       return res
@@ -140,7 +140,7 @@ const getAll = async (req, res, next) => {
         .json(
           allComments.length > 0
             ? allComments
-            : `No se han encontrado comentarios en ${elevenById.name} en la DB ❌`,
+            : `No se han encontrado comentarios en ${elevenById.name} en la DB ❌`
         );
     } else {
       return res
@@ -152,8 +152,8 @@ const getAll = async (req, res, next) => {
       setError(
         500,
         error.message ||
-          `Error general al buscar todos los comentarios del 11 ideal indicado ❌`,
-      ),
+          `Error general al buscar todos los comentarios del 11 ideal indicado ❌`
+      )
     );
   }
 };
@@ -172,7 +172,7 @@ const deleteComment = async (req, res, next) => {
         await Eleven.updateMany(
           //? --------- ahora estamos cambiando en el model de Eleven para poder quitar el equipo que ya no existe
           { comments: id }, //? --------------------------- queremos cambiar lo que sea que haya que cambiar en esta propiedad del model, si se omite se dice que se cambia cualquier conincidencia en todo el modelo. es la condición
-          { $pull: { comments: id } }, //? ------------------- estamos diciendo que quite de la propiedad comments, el id indicado, es decir el del equipo que se ha eliminado. es la ejecución
+          { $pull: { comments: id } } //? ------------------- estamos diciendo que quite de la propiedad comments, el id indicado, es decir el del equipo que se ha eliminado. es la ejecución
         );
 
         try {
@@ -180,56 +180,52 @@ const deleteComment = async (req, res, next) => {
           await User.updateMany(
             //? ------- ahora estamos cambiando en el model de User para poder quitar el favcomment que ya no existe
             { favComments: id }, //? -------------------- condición/ubicación del cambio (eliminación)
-            { $pull: { favComments: id } }, //? ------------ ejecución
+            { $pull: { favComments: id } } //? ------------ ejecución
           );
           try {
             //? ----------------------------------------- ELIMINAMOS AL FAVCOMMENT DEL PODIUM
             await Podium.updateMany(
               //? ------- ahora estamos cambiando en el model de User para poder quitar el favcomment que ya no existe
               { comments: id }, //? -------------------- condición/ubicación del cambio (eliminación)
-              { $pull: { comments: id } }, //? ------------ ejecución
+              { $pull: { comments: id } } //? ------------ ejecución
             );
             try {
               //? ----------------------------------------- ELIMINAMOS AL FAVCOMMENT DEL Lifter
               await Lifter.updateMany(
-               
-                { comments: id }, 
-                { $pull: { comments: id } }, 
+                { comments: id },
+                { $pull: { comments: id } }
               );
-              
             } catch (error) {
               return next(
                 setError(
                   500,
-                  error.message || "Error al eliminar el comentario del Lifter ❌",
-                ),
+                  error.message ||
+                    'Error al eliminar el comentario del Lifter ❌'
+                )
               );
-              
             }
           } catch (error) {
             return next(
               setError(
                 500,
-                error.message || "Error al eliminar el comentario del podium ❌",
-              ),
+                error.message || 'Error al eliminar el comentario del podium ❌'
+              )
             );
-            
           }
         } catch (error) {
           return next(
             setError(
               500,
-              error.message || "Error al eliminar el comentario del user ❌",
-            ),
+              error.message || 'Error al eliminar el comentario del user ❌'
+            )
           );
-          
         }
       } catch (error) {
         return next(
           setError(
             500,
-            error.message || "Error al eliminar el comentario del eleven ❌",
-          ),
+            error.message || 'Error al eliminar el comentario del eleven ❌'
+          )
         );
       }
 
@@ -239,14 +235,14 @@ const deleteComment = async (req, res, next) => {
         deleteTest: findByIdComment ? false : true, //? si existe, el test ha dado fallo y si no existe ha aprobado el test
       });
     } else {
-      return res.status(404).json("este comentario no existe ❌"); //? si no existe el jugador antes de eliminarlo hay que dar error porque el jugador seleccionado para borrar no existia en un primer momento
+      return res.status(404).json('este comentario no existe ❌'); //? si no existe el jugador antes de eliminarlo hay que dar error porque el jugador seleccionado para borrar no existia en un primer momento
     }
   } catch (error) {
     return next(
       setError(
         500,
-        error.message || "Error general al eliminar tu comentario ❌",
-      ),
+        error.message || 'Error general al eliminar tu comentario ❌'
+      )
     );
   }
 };
@@ -257,6 +253,5 @@ module.exports = {
   getAll,
   deleteComment,
   createLifterComment,
-  createPodiumComment
+  createPodiumComment,
 };
-

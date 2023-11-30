@@ -294,7 +294,9 @@ const sendCode = async (req, res, next) => {
 const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const userById = await User.findById(id).populate("favPlayers favTeams favElevens favRiders favCircuits favPodiums favLifters favWeightCategories comments favComments followers"); //? cogemos el elemento (usuario) identificandolo a través del id, que es único
+    const userById = await User.findById(id).populate(
+      'favPlayers favTeams favElevens favRiders favCircuits favPodiums favLifters favWeightCategories comments favComments followers followed yourteam yourPodium'
+    ); //? cogemos el elemento (usuario) identificandolo a través del id, que es único
     return res
       .status(userById ? 200 : 404)
       .json(
@@ -403,7 +405,7 @@ const resendCode = async (req, res, next) => {
 
     const userExist = await User.findOne({ email: req.body.email }); //? comprobamos que el user existe gracias al req.body.email ya que lo checkeamos buscandolo en la DB
     if (userExist) {
-      console.log(userExist)
+      console.log(userExist);
       const mailOptions = {
         //? ------------------------------ seteamos las opciones del email que se envía
         from: email,
