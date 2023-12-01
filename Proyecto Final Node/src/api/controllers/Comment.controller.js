@@ -12,11 +12,14 @@ const create = async (req, res, next) => {
     const { location } = req.params;
     const creator = req.user._id;
     const body = req.body;
+    const eleven = await Eleven.findById(location);
+
     const customBody = {
       //? creamos un customBody para añadirle el creador que nos lo da el token y la location que nos la da la url. a parte del contenido que lo damos en el body
       creator: creator,
       location: location,
       comment: body.comment,
+      name: eleven.name,
     };
     const newComment = new Comment(customBody);
     const saveComment = await newComment.save();
@@ -44,12 +47,14 @@ const createPodiumComment = async (req, res, next) => {
     const { locationMoto } = req.params;
     const creator = req.user._id;
     const body = req.body;
+    const moto = await Podium.findById(locationMoto);
     const customBody = {
       //? creamos un customBody para añadirle el creador que nos lo da el token y la locationMoto que nos la da la url. a parte del contenido que lo damos en el body
       creator: creator,
       locationMoto: locationMoto,
       comment: body.comment,
-      rating:body.rating
+      rating: body.rating,
+      name: moto.name,
     };
     const newComment = new Comment(customBody);
     const saveComment = await newComment.save();
@@ -77,12 +82,15 @@ const createLifterComment = async (req, res, next) => {
     const { locationLifter } = req.params;
     const creator = req.user._id;
     const body = req.body;
+    const lifter = await Lifter.findById(locationLifter);
+
     const customBody = {
       //? creamos un customBody para añadirle el creador que nos lo da el token y la locationLifter que nos la da la url. a parte del contenido que lo damos en el body
       creator: creator,
       locationLifter: locationLifter,
       comment: body.comment,
-      rating:body.rating
+      rating: body.rating,
+      name: lifter.name,
     };
     const newComment = new Comment(customBody);
     const saveComment = await newComment.save();
