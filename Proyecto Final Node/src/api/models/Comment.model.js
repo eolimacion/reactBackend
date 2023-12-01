@@ -4,6 +4,7 @@ const CommentSchema = new Schema(
   {
     rating: { type: Number, required: true },
     creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    creatorName: { type: String },
     location: { type: mongoose.Schema.Types.ObjectId, ref: 'Eleven' },
     locationMoto: { type: mongoose.Schema.Types.ObjectId, ref: 'Podium' },
     name: { type: String },

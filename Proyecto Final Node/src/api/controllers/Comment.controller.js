@@ -17,10 +17,12 @@ const create = async (req, res, next) => {
     const customBody = {
       //? creamos un customBody para añadirle el creador que nos lo da el token y la location que nos la da la url. a parte del contenido que lo damos en el body
       creator: creator,
+      creatorName: req.user.name,
       location: location,
       comment: body.comment,
+      rating: body.rating,
       name: eleven.name,
-      image: creator.image,
+      image: req.user.image,
     };
     const newComment = new Comment(customBody);
     const saveComment = await newComment.save();
@@ -52,11 +54,12 @@ const createPodiumComment = async (req, res, next) => {
     const customBody = {
       //? creamos un customBody para añadirle el creador que nos lo da el token y la locationMoto que nos la da la url. a parte del contenido que lo damos en el body
       creator: creator,
+      creatorName: req.user.name,
       locationMoto: locationMoto,
       comment: body.comment,
       rating: body.rating,
       name: moto.name,
-      image: creator.image,
+      image: req.user.image,
     };
     const newComment = new Comment(customBody);
     const saveComment = await newComment.save();
