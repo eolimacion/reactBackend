@@ -20,6 +20,7 @@ const create = async (req, res, next) => {
       location: location,
       comment: body.comment,
       name: eleven.name,
+      image: creator.image,
     };
     const newComment = new Comment(customBody);
     const saveComment = await newComment.save();
@@ -55,6 +56,7 @@ const createPodiumComment = async (req, res, next) => {
       comment: body.comment,
       rating: body.rating,
       name: moto.name,
+      image: creator.image,
     };
     const newComment = new Comment(customBody);
     const saveComment = await newComment.save();
