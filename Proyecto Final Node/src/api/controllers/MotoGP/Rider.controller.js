@@ -324,8 +324,11 @@ const sortRidersByDescending = async (req, res, next) => {
     const { stat } = req.params;
     const ridersArray = await Rider.find().populate('circuits likes selected');
     switch (stat) {
+      case 'name':
+      case 'nationality':
       case 'number':
       case 'age':
+      case 'ranking':
       case 'polesSeason':
       case 'points':
       case 'victoriesSeason':
@@ -433,14 +436,15 @@ const filterRiders = async (req, res, next) => {
     const { filter, gt, lt } = req.params;
 
     switch (filter) {
-      case 'name':
-      case 'team':
-      case 'nationality':
+      case 'number':
+      case 'age':
+      case 'ranking':
       case 'victoriesSeason':
       case 'victoriesCarrer':
       case 'championshipsCarrer':
       case 'polesSeason':
       case 'points':
+      case 'rating':
         ridersArray = await Rider.find({
           $and: [{ [filter]: { $gt: gt } }, { [filter]: { $lt: lt } }],
         }).populate('likes selected circuits');

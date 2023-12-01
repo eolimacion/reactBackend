@@ -259,7 +259,6 @@ const sortCircuitsbyDescending = async (req, res, next) => {
       case 'location':
       case 'capacity':
       case 'topSpeed':
-        case 'name':
         circuitsArray.sort((a, b) => {
           return b[stat] - a[stat]; //? le decimos que ordene de manera descendiente (ascendiente sería a - b)
         });

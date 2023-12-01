@@ -136,7 +136,7 @@ const togglePlayer = async (req, res, next) => {
 
 //! --------------- GET by ID ----------------
 const getById = async (req, res, next) => {
-  // console.log("entro")
+  console.log("entro ID")
   try {
     const { id } = req.params;
     const teamById = await Team.findById(id).populate("players likes"); //? cogemos el elemento (equipo) identificandola a través del id, que es único
@@ -168,6 +168,7 @@ const getAll = async (req, res, next) => {
 
 //! --------------- GET by NAME ----------------
 const getByName = async (req, res, next) => {
+  console.log("entro name")
   try {
     const { name } = req.params;
     const teamByName = await Team.find({ name }).populate("players likes");
