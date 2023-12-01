@@ -49,6 +49,7 @@ const createPodiumComment = async (req, res, next) => {
       creator: creator,
       locationMoto: locationMoto,
       comment: body.comment,
+      rating:body.rating
     };
     const newComment = new Comment(customBody);
     const saveComment = await newComment.save();
@@ -81,6 +82,7 @@ const createLifterComment = async (req, res, next) => {
       creator: creator,
       locationLifter: locationLifter,
       comment: body.comment,
+      rating:body.rating
     };
     const newComment = new Comment(customBody);
     const saveComment = await newComment.save();
