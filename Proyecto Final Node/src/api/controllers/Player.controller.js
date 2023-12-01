@@ -54,7 +54,7 @@ const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const playerById = await Player.findById(id).populate(
-      "team likes selected",
+      "team selected",
     ); //? cogemos el elemento (jugador) identificandola a través del id, que es único
     if (playerById) {
       //? --------------------------- si hay un elemento con dicho id

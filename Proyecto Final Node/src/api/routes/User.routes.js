@@ -79,11 +79,11 @@ UserRoutes.patch('/toggleWeightCategory/:idWeightCategory', [isAuth], addFavWeig
 UserRoutes.patch('/toggleComment/:idComment', [isAuth], addFavComment);
 UserRoutes.patch('/toggleFollow/:idUser', [isAuth], addFollow);
 UserRoutes.get('/favTeams/:id', [isAuth], [isFollower], getFavTeams);
-UserRoutes.get('/favPlayers/:id', [isAuth], [isFollower], getFavPlayers);
-UserRoutes.get('/favRiders/:id', [isAuth], [isFollower], getFavRiders);
+UserRoutes.get('/favPlayers/:id', [isAuth],  getFavPlayers);
+UserRoutes.get('/favRiders/:id', [isAuth], getFavRiders);
 UserRoutes.get('/favCircuits/:id', [isAuth], [isFollower], getFavCircuits);
 UserRoutes.get('/favPodiums/:id', [isAuth], [isFollower], getFavPodiums);
-UserRoutes.get('/favLifters/:id', [isAuth], [isFollower], getFavLifters);
+UserRoutes.get('/favLifters/:id', [isAuth], getFavLifters);
 UserRoutes.get('/favWeightCategory/:id', [isAuth], [isFollower], getFavWeightCategory);
 UserRoutes.get('/followers/:id', [isAuth], [isFollower], getFollowers);
 UserRoutes.get('/followed/:id', [isAuth], [isFollower], getFollowed);

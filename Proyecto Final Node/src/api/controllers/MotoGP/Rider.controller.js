@@ -54,7 +54,7 @@ const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const riderById = await Rider.findById(id).populate(
-      'likes selected circuits'
+      'selected circuits'
     ); //? cogemos el elemento (rider) identificandola a través del id, que es único
     if (riderById) {
       //? --------------------------- si hay un elemento con dicho id
