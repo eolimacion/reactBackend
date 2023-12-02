@@ -1,4 +1,4 @@
-const { isAuth, isFollower } = require('../../middleware/auth.middleware');
+const { isAuth,   } = require('../../middleware/auth.middleware');
 const { upload } = require('../../middleware/files.middleware'); //? lo traemos porque hay una subida de ficheros
 const {
   //! MAIN
@@ -78,18 +78,18 @@ UserRoutes.patch('/lifter/toggleLifter/:idLifter', [isAuth], addFavLifter);
 UserRoutes.patch('/toggleWeightCategory/:idWeightCategory', [isAuth], addFavWeightCategory);
 UserRoutes.patch('/toggleComment/:idComment', [isAuth], addFavComment);
 UserRoutes.patch('/toggleFollow/:idUser', [isAuth], addFollow);
-UserRoutes.get('/favTeams/:id', [isAuth], [isFollower], getFavTeams);
+UserRoutes.get('/favTeams/:id', [isAuth], getFavTeams);
 UserRoutes.get('/favPlayers/:id', [isAuth],  getFavPlayers);
 UserRoutes.get('/favRiders/:id', [isAuth], getFavRiders);
-UserRoutes.get('/favCircuits/:id', [isAuth], [isFollower], getFavCircuits);
-UserRoutes.get('/favPodiums/:id', [isAuth], [isFollower], getFavPodiums);
+UserRoutes.get('/favCircuits/:id', [isAuth], getFavCircuits);
+UserRoutes.get('/favPodiums/:id', [isAuth], getFavPodiums);
 UserRoutes.get('/favLifters/:id', [isAuth], getFavLifters);
-UserRoutes.get('/favWeightCategory/:id', [isAuth], [isFollower], getFavWeightCategory);
-UserRoutes.get('/followers/:id', [isAuth], [isFollower], getFollowers);
-UserRoutes.get('/followed/:id', [isAuth], [isFollower], getFollowed);
-UserRoutes.get('/favElevens/:id', [isAuth], [isFollower], getFavElevens);
-UserRoutes.get('/favComments/:id', [isAuth], [isFollower], getFavComments);
-UserRoutes.get('/comments/:id', [isAuth], [isFollower], getComments);
+UserRoutes.get('/favWeightCategory/:id', [isAuth],  getFavWeightCategory);
+UserRoutes.get('/followers/:id', [isAuth],  getFollowers);
+UserRoutes.get('/followed/:id', [isAuth], getFollowed);
+UserRoutes.get('/favElevens/:id', [isAuth], [ ], getFavElevens);
+UserRoutes.get('/favComments/:id', [isAuth], [ ], getFavComments);
+UserRoutes.get('/comments/:id', [isAuth], [ ], getComments);
 
 //!-----> Controladores de redirect
 UserRoutes.post('/register/sendMail/:id', sendCode);
