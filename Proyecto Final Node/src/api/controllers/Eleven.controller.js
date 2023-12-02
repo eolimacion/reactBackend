@@ -131,7 +131,7 @@ const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const elevenById = await Eleven.findById(id).populate(
-      "owner goalkeeper rightback centreback1 centreback2 leftback midfielder1 midfielder2 midfielder3 forward1 forward2 forward3",
+      "owner goalkeeper rightback centreback1 centreback2 leftback midfielder1 midfielder2 midfielder3 forward1 forward2 forward3 comments",
     ); //? cogemos el elemento (eleven) identificandola a través del id, que es único
     return res
       .status(elevenById ? 200 : 404)
