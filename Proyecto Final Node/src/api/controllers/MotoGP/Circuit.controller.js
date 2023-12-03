@@ -54,6 +54,22 @@ const getById = async (req, res, next) => {
   }
 };
 
+
+//! --------------- GET by ID ----------------
+
+const getByIdNotPopulated = async (req, res, next) => {
+  // console.log("entro")
+  try {
+    const { id } = req.params;
+    const circuitById = await Circuit.findById(id);
+    return res
+      .status(circuitById ? 200 : 404)
+      .json(circuitById ? circuitById : 'No circuit found with that ID❌');
+  } catch (error) {
+    return next(setError(500, error.message || 'Error GET by ID ❌'));
+  }
+};
+
 //! --------------- GET ALL ----------------
 const getAll = async (req, res, next) => {
   try {
@@ -502,4 +518,5 @@ module.exports = {
   filterGeneralNum,
   filterAndSort,
   averageStats,
+  getByIdNotPopulated
 };

@@ -150,6 +150,22 @@ const getById = async (req, res, next) => {
   }
 };
 
+
+//! --------------- GET by ID OT POPULATED----------------
+const getByIdNotPopulated = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const teamById = await Team.findById(id);
+      return res
+      .status(teamById ? 200 : 404)
+      .json(
+        teamById ? teamById : "no se ha encontrado un equipo con ese id ❌",
+      );
+  } catch (error) {
+    return next(setError(500, error.message || "Error al GET by ID ❌"));
+  }
+};
+
 //! --------------- GET ALL ----------------
 const getAll = async (req, res, next) => {
   try {
@@ -771,6 +787,7 @@ module.exports = {
   getByName,
   update,
   deleteTeam,
+  getByIdNotPopulated,
 
   //! EXTRA
   sortTeamsbyDescending,

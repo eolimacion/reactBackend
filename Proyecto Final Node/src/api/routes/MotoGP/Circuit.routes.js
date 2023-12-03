@@ -12,6 +12,7 @@ const {
   filterGeneralNum,
   filterAndSort,
   averageStats,
+  getByIdNotPopulated,
 } = require('../../controllers/MotoGP/Circuit.controller');
 
 const CircuitRoutes = require('express').Router();
@@ -27,5 +28,7 @@ CircuitRoutes.get('/sortascending/circuits/:stat', sortCircuitsbyAscending);
 CircuitRoutes.get('/filter/circuits/:filter/:gt/:lt', filterGeneralNum);
 CircuitRoutes.get('/filtersort/circuits/:filter/:gt/:lt', filterAndSort);
 CircuitRoutes.get('/average/:stat/', averageStats);
+CircuitRoutes.get('/notPopulated/:id', getByIdNotPopulated);
+
 
 module.exports = CircuitRoutes;
