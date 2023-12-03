@@ -329,7 +329,7 @@ const getAll = async (req, res, next) => {
 const getByName = async (req, res, next) => {
   try {
     const { name } = req.params;
-    const userByName = await User.find({ name });
+    const userByName = await User.find({ name: {$regex : name, $options : "i"} });
     return res
       .status(userByName.length > 0 ? 200 : 404) //? igual que en get all, miramos si el array con ese nombre es mayor que 0 (solo debería de haber 1) y mostramos 200 o 404
       .json(

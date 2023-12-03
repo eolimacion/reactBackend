@@ -71,7 +71,7 @@ const getByLifterName = async (req, res) => {
     name = name.toLowerCase();
 
     console.log(name);
-    const lifterByName = await Lifter.find({ name });
+    const lifterByName = await Lifter.find({ name: {$regex : name, $options : "i"} });
     console.log(lifterByName);
     if (lifterByName.length > 0) {
       return res.status(200).json(lifterByName);

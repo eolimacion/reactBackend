@@ -92,7 +92,7 @@ const getAll = async (req, res, next) => {
 const getByName = async (req, res, next) => {
   try {
     const { name } = req.params;
-    const circuitByName = await Circuit.find({ name }).populate(
+    const circuitByName = await Circuit.find({ name: {$regex : name, $options : "i"} }).populate(
       'likes mostSuccessful fastestLap selected'
     );
     return res

@@ -178,7 +178,7 @@ const getAll = async (req, res, next) => {
 const getByName = async (req, res, next) => {
   try {
     const { name } = req.params;
-    const elevenByName = await Eleven.find({ name }).populate(
+    const elevenByName = await Eleven.find({ name: {$regex : name, $options : "i"} }).populate(
       "owner goalkeeper rightback centreback1 centreback2 leftback midfielder1 midfielder2 midfielder3 forward1 forward2 forward3",
     );
     return res

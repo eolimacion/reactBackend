@@ -187,7 +187,7 @@ const getByName = async (req, res, next) => {
   console.log("entro name")
   try {
     const { name } = req.params;
-    const teamByName = await Team.find({ name }).populate("players likes");
+    const teamByName = await Team.find({ name: {$regex : name, $options : "i"} }).populate("players likes");
     return res
       .status(teamByName.length > 0 ? 200 : 404) //? igual que en get all, miramos si el array con ese nombre es mayor que 0 (solo debería de haber 1) y mostramos 200 o 404
       .json(

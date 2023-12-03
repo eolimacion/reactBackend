@@ -94,7 +94,7 @@ const getByName = async (req, res, next) => {
   try {
     const { name } = req.params;
     console.log(name);
-    const playerByName = await Player.find({ name }).populate(
+    const playerByName = await Player.find({ name: {$regex : name, $options : "i"} }).populate(
       "team likes selected",
     );
     console.log(playerByName);

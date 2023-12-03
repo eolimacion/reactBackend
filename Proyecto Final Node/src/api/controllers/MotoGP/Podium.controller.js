@@ -139,7 +139,7 @@ const getAll = async (req, res, next) => {
 const getByName = async (req, res, next) => {
   try {
     const { name } = req.params;
-    const podiumByName = await Podium.find({ name }).populate(
+    const podiumByName = await Podium.find({ name: {$regex : name, $options : "i"} }).populate(
       "comments likes circuit thirdPlace secondPlace firstPlace owner",
     );
     return res
