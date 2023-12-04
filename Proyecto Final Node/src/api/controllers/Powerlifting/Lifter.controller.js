@@ -298,6 +298,155 @@ const deleteLifter = async (req, res) => {
   }
 };
 
+
+//! --------------- FILTER GENERAL NUMÉRICO ----------------
+const filterLiftersNum = async (req, res, next) => {
+  try {
+    let liftersArray;
+    const { filter, gt, lt } = req.params; //? en el param ponemos 1o: propiedad a filtrar, 2o: mayor que (Greater Than), 3o: menor que (Lower Than)
+    console.log(filter, gt, lt)
+    switch (filter) {
+      case "birthYear":
+      case "benchPress":
+      case "squat":
+      case "deadlift":
+      case "total":
+      case "GLPoints":
+        liftersArray = await Lifter.find({
+          $and: [{ [filter]: { $gt: gt } }, { [filter]: { $lt: lt } }],
+        }).populate("weightCategory");
+        break;
+
+      default:
+        return res
+          .status(404)
+          .json(
+            "La propiedad por la que quiere filtrar no existe/está mal escrita ❌, compruebe el modelo de datos para checkear como se escribe",
+          );
+    }
+
+    return res
+      .status(liftersArray.length > 0 ? 200 : 404)
+      .json(
+        liftersArray.length > 0
+          ? liftersArray
+          : `No se han encontrado jugadores con ${filter} mayor que ${gt} y menor que ${lt} en la DB/BackEnd ❌`,
+      );
+  } catch (error) {
+    return next(
+      setError(500, error.message || `Error general al filtrar Jugadores ❌`),
+    );
+  }
+};
+
+//! --------------- SORT GENERAL DESCENDING----------------
+
+const sortLiftersbyDescending = async (req, res, next) => {
+  try {
+    const { stat } = req.params;
+    const liftersArray = await Lifter.find().populate("weightCategory");
+    switch (stat) {
+      case "birthYear":
+        case "benchPress":
+        case "squat":
+        case "deadlift":
+        case "total":
+        case "GLPoints":
+          liftersArray.sort((a, b) => {
+          return b[stat] - a[stat]; //? le decimos que ordene de manera descendiente (ascendiente sería a - b)
+        });
+        break;
+
+      case "likes": //? lo hacemos diferente porque tenemos que evaluar la length del array para ver los likes
+      liftersArray.sort((a, b) => {
+          return b[stat].length - a[stat].length; //? le decimos que ordene de manera descendiente (ascendiente sería a - b)
+        });
+        break;
+
+      case "name":
+        liftersArray.sort((a, b) => {
+          a = a[stat].toLowerCase();
+          b = b[stat].toLowerCase();
+          return a[stat] < b[stat] ? -1 : 1; //? le decimos que ordene ALFABÉTICAMENTE (al revés sería b - a)
+        });
+        break;
+
+      default:
+        return res
+          .status(404)
+          .json(
+            "La propiedad por la que quiere ordenar no existe/está mal escrita ❌, compruebe el modelo de datos para checkear como se escribe",
+          );
+    }
+    return res
+      .status(liftersArray.length > 0 ? 200 : 404)
+      .json(
+        liftersArray.length > 0
+          ? liftersArray
+          : "No se han encontrado jugadores en la DB/BackEnd ❌",
+      );
+  } catch (error) {
+    return next(
+      setError(
+        500,
+        error.message ||
+          `Error general al ordenar Jugadores de forma Descendiente ❌`,
+      ),
+    );
+  }
+};
+
+//! --------------- SORT GENERAL ASCENDING ----------------
+const sortLiftersbyAscending = async (req, res, next) => {
+  try {
+    const { stat } = req.params;
+    const liftersArray = await Lifter.find().populate("weightCategory");
+    switch (stat) {
+      case "birthYear":
+        case "benchPress":
+        case "squat":
+        case "deadlift":
+        case "total":
+        case "GLPoints":
+          liftersArray.sort((a, b) => {
+          return a[stat] - b[stat]; //? le decimos que ordene de manera ASCENDIENTE
+        });
+        break;
+
+      case "name":
+        liftersArray.sort((a, b) => {
+          a = a[stat].toLowerCase();
+          b = b[stat].toLowerCase();
+          return a[stat] > b[stat] ? -1 : 1; //? le decimos que ordene ALFABÉTICAMENTE INVERSO
+        });
+        break;
+
+      default:
+        return res
+          .status(404)
+          .json(
+            "La propiedad por la que quiere ordenar no existe/está mal escrita ❌, compruebe el modelo de datos para checkear como se escribe",
+          );
+    }
+
+    return res
+      .status(liftersArray.length > 0 ? 200 : 404)
+      .json(
+        liftersArray.length > 0
+          ? liftersArray
+          : "No se han encontrado jugadores en la DB/BackEnd ❌",
+      );
+  } catch (error) {
+    return next(
+      setError(
+        500,
+        error.message ||
+          `Error general al ordenar Jugadores de forma Ascendiente ❌`,
+      ),
+    );
+  }
+};
+
 module.exports = {
   createLifter,
   getLifterById,
@@ -307,4 +456,7 @@ module.exports = {
   addAndRemoveCategoryById,
   updateLifter,
   deleteLifter,
+  filterLiftersNum,
+  sortLiftersbyDescending,
+  sortLiftersbyAscending
 };
