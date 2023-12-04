@@ -154,7 +154,7 @@ const getById = async (req, res, next) => {
 const getAll = async (req, res, next) => {
   try {
     const allElevens = await Eleven.find().populate(
-      "owner goalkeeper rightback centreback1 centreback2 leftback midfielder1 midfielder2 midfielder3 forward1 forward2 forward3",
+      "owner goalkeeper rightback centreback1 centreback2 leftback midfielder1 midfielder2 midfielder3 forward1 forward2 forward3 comments",
     ); //? ------------- el find() nos devuelve un array con todos los elementos de la colección del BackEnd, es decir, TODOS LOS 11 IDEALES
     console.log(allElevens);
     return res
