@@ -161,6 +161,8 @@ const update = async (req, res) => {
           "team likes selected",
         ); //? cambiamos el body con lo que hemos puesto en customBody en el elemento que encontremos con el id
         if (req.file?.path) {
+          console.log(req.file.path)
+          console.log(oldImg)
           deleteImgCloudinary(oldImg); //? -------------- eliminamos la imagen que había antes en la DB para no almacenar basura
         }
         //!           -------------------
